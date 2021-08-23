@@ -10,8 +10,8 @@ namespace Sintaxis3
                 //ejecutar dispose cuando se destruye el objeto
                 using (Lenguaje l = new Lenguaje("C:\\archivos\\suma.cpp")){      
                     //instanciamos nuestra clase
-                    /*while(!l.finArchivo()
-                        l.nextToken()
+                    /*while(!l.finArchivo()){
+                        l.nextToken();
                     }*/
                     l.Programa();
                 }
