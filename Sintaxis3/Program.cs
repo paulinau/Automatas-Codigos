@@ -11,7 +11,7 @@ namespace Sintaxis3
                 using (Lenguaje l = new Lenguaje("C:\\archivos\\suma.cpp")){      
                     //instanciamos nuestra clase
                     /*while(!l.finArchivo()){
-                        l.nextToken();
+                        l.nextToken()
                     }*/
                     l.Programa();
                 }
