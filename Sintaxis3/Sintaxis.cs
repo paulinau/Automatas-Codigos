@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Sintaxis3
 {
-    public class Sintaxis : Lexico
+    class Sintaxis : Lexico
     {
         public Sintaxis(){
             Console.WriteLine("Iniciando analisis sintactico");
@@ -20,8 +20,7 @@ namespace Sintaxis3
                 //sacamos un token
                 nextToken();
             }else{
-                bitacora.WriteLine("Error de sintaxis en la linea: {0} caracter: {1} se espera un: {2} ", linea, caracter,espera);
-                throw new Exception("Error de sintaxis: se espera un "+espera+" en la linea: "+linea+" caracter: "+caracter);
+                throw new Error(bitacora, "Error de sintaxis: Se espera un " + espera + " (" + linea + ", " + caracter + ")");
             }
         }
 
@@ -30,8 +29,7 @@ namespace Sintaxis3
             if(espera == getClasificacion()){
                 nextToken();
             }else{
-                bitacora.WriteLine("Error de sintaxis en la linea: {0} caracter: {1} se espera un: {2} ", linea, caracter,espera);
-                throw new Exception("Error de sintaxis: se espera un "+espera+" en la linea: "+linea+" caracter: "+caracter);
+                 throw new Error(bitacora, "Error de sintaxis: Se espera un " + espera + " (" + linea + ", " + caracter + ")");
             }
         }
     }

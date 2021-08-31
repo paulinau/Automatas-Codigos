@@ -1,6 +1,9 @@
+using System;
+using System.IO;
+
 namespace Sintaxis3
 {
-    public class Token
+    class Token: Error
     {
         public enum clasificaciones{
             identificador, numero, asignacion, inicializacion, fin_sentencia,

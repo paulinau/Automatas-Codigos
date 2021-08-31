@@ -11,7 +11,7 @@ using System.IO;
 
 namespace Sintaxis3
 {
-    public class Lenguaje : Sintaxis
+    class Lenguaje : Sintaxis
     {
         public Lenguaje(){
             Console.WriteLine("Iniciando analisis gramatical");

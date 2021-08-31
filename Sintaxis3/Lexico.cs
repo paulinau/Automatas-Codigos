@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Sintaxis3
 {
-    public class Lexico : Token, IDisposable
+    class Lexico : Token, IDisposable
     {
         protected StreamReader archivo;
         protected StreamWriter bitacora;
@@ -11,7 +11,7 @@ namespace Sintaxis3
         const int F = -1; 
         const int E = -2;
         string nombre_archivo;
-        int[,] trand6x = { // WS,EF, L, D, ., +, -, E, =, :, ;, &, |, !, >, <, *, /, %, ", ', ?,La, {, }, #10
+        int[,] trand   = { // WS,EF, L, D, ., +, -, E, =, :, ;, &, |, !, >, <, *, /, %, ", ', ?,La, {, }, #10
                             {  0, F, 1, 2,29,17,18, 1, 8, 9,11,12,13,15,26,27,20,32,20,22,24,28,29,30,31, 0},//0
                             {  F, F, 1, 1, F, F, F, 1, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F},//1
                             {  F, F, F, 2, 3, F, F, 5, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F},//2
@@ -129,8 +129,9 @@ namespace Sintaxis3
             //mientras esté en estados positivos, permanezco en el automata
             while(estado >= 0){  
                 estado_anterior = estado;
+
                 transicion = (char) archivo.Peek();
-                estado = trand6x[estado, columna(transicion)];
+                estado = trand[estado, columna(transicion)];
                 clasificar(estado);
                 
                 //son caracteres validos
@@ -150,27 +151,19 @@ namespace Sintaxis3
                     }
                 }
             }
-            
+            setContenido(palabra);
             //se produjo una excepcion
             if (estado == E){
-                clasificaciones tipo = getClasificacion();
-                if (tipo == clasificaciones.numero){
-                    bitacora.WriteLine("Error lexico en la linea: {0} caracter: {1} se espera un digito", linea, caracter);
-                    throw new Exception("Error lexico en la linea: "+linea+" caracter: "+caracter+"  se espera un digito");
-                }else if (tipo == clasificaciones.cadena){
-                    if (estado_anterior == 22){
-                        bitacora.WriteLine("Error lexico en la linea: {0} caracter: {1} se espera comilla doble", linea, caracter);
-                        throw new Exception("Error lexico en la linea: "+linea+" caracter: "+caracter+ " se espera comilla doble");
-                    }else if (estado_anterior == 24){
-                        bitacora.WriteLine("Error lexico en la linea: {0} caracter: {1} se espera comilla simple", linea, caracter);
-                        throw new Exception("Error lexico en la linea: "+linea+" caracter: "+caracter+ " se espera cierre de comilla simple");
-                    }
-                }else{
-                    bitacora.WriteLine("Error lexico en la linea: {0} caracter: {1} se espera fin de comentario", linea, caracter);
-                    throw new Exception("Error lexico en la linea: "+linea+" caracter: "+caracter+ " se espera cierre de comentario" );
+                if(getClasificacion() == clasificaciones.cadena){
+                    throw new Error(bitacora, "Error lexico: Se esperaba comillas (\") o comilla (') de cierre. (" + linea + ", " + caracter + ")");
                 }
-            }else if (palabra != ""){
-                setContenido(palabra);
+                else if (getClasificacion() == clasificaciones.numero){
+                    throw new Error(bitacora, "Error lexico: Se esperaba un dígito. (" + linea + ", " + caracter + ")");
+                }
+                else{
+                    throw new Error(bitacora, "Error lexico: Se esperaba un cierre de comentario (*/). (" + linea + ", " + caracter + ")");
+                }      
+            }else if (getClasificacion() == clasificaciones.identificador){
                 switch(palabra){
                     //en caso de que sea char, int o float
                     case "char":
