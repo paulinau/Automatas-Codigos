@@ -188,6 +188,8 @@ namespace Sintaxis3
                         setClasificacion(clasificaciones.ciclo);
                         break;
                 }
+            }
+            if(getContenido() != ""){
                 bitacora.WriteLine("Token = " + getContenido());
                 bitacora.WriteLine("Clasificacion = " + getClasificacion());
             }

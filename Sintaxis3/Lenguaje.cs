@@ -1,12 +1,9 @@
 using System;
 using System.IO;
 
-// REQUERIMIENTO 1: Poder asignar una expresion matematica al momento de declarar una 
-//                  lista de variables o una variable
-// REQUERIMIENTO 2: En la Condicion debe de ir Expresion operador_relacional Expresion +
-// REQUERIMIENTO 3: Implementar el For +
-// REQUERIMIENTO 4: Implementar el While +
-// REQUERIMIENTO 5: Implementar el DO-While +
+// REQUERIMIENTO 1: Implementar las secuencias de escape: \n, \t cuando se imprime una cadena 
+//                  y eliminar las dobles comillas
+// REQUERIMIENTO 2: 
 
 
 namespace Sintaxis3
@@ -33,7 +30,7 @@ namespace Sintaxis3
                 match("#");
                 match("include");
                 match("<");
-                match(Token.clasificaciones.identificador);
+                match(clasificaciones.identificador);
                 if(getContenido() == "."){
                     match(".");
                     match("h");
@@ -62,7 +59,7 @@ namespace Sintaxis3
 
         //Lista_IDs -> identificador (,Lista_IDs)?
         private void Lista_IDs(){
-            match(clasificaciones.identificador);
+            match(clasificaciones.identificador); //validar duplicidad
 
             if(getClasificacion() == clasificaciones.asignacion){
                 match(clasificaciones.asignacion);
@@ -94,7 +91,7 @@ namespace Sintaxis3
             }else if(getContenido() == "cin"){
                 match("cin");
                 match(clasificaciones.flujo_entrada);
-                match(clasificaciones.identificador);
+                match(clasificaciones.identificador);   //validar existencia
                 match(clasificaciones.fin_sentencia);
             }else if(getContenido() == "const"){
                 Constante();
@@ -105,7 +102,7 @@ namespace Sintaxis3
             }else if(getContenido() == "do"){
                 DoWhile();
             }else{
-                match(clasificaciones.identificador);
+                match(clasificaciones.identificador);   //validar existencia
                 match(clasificaciones.asignacion);
 
                 if(getClasificacion() == clasificaciones.cadena){
@@ -129,7 +126,7 @@ namespace Sintaxis3
         private void Constante(){
             match("const");
             match(clasificaciones.tipo_dato);
-            match(clasificaciones.identificador);
+            match(clasificaciones.identificador);   //validar duplicidad
             match(clasificaciones.asignacion);
             if(getClasificacion() == clasificaciones.numero){
                 match(clasificaciones.numero);
@@ -143,11 +140,14 @@ namespace Sintaxis3
         private void ListaFlujoSalida(){
             match(clasificaciones.flujo_salida); //<<
             if(getClasificacion() == clasificaciones.numero){
+                Console.Write(getContenido());
                 match(clasificaciones.numero);
             }else if(getClasificacion() == clasificaciones.cadena){
+                Console.Write(getContenido());
                 match(clasificaciones.cadena);
             }else{
-                match(clasificaciones.identificador);
+                Console.Write(getContenido());
+                match(clasificaciones.identificador);   //validar existencia
             }
 
             if(getClasificacion() == clasificaciones.flujo_salida){
@@ -184,6 +184,7 @@ namespace Sintaxis3
         // MasTermino -> (operador_termino Termino)?
         private void MasTermino(){
             if(getClasificacion() == clasificaciones.operador_termino){
+                Console.Write(getContenido()+" ");
                 match(clasificaciones.operador_termino);
                 Termino();
             }
@@ -196,6 +197,7 @@ namespace Sintaxis3
         // PorFactor -> (operador_factor Factor)?
         private void PorFactor(){
             if(getClasificacion() == clasificaciones.operador_factor){
+                Console.Write(getContenido()+" ");
                 match(clasificaciones.operador_factor);
                 Factor();
             }
@@ -203,8 +205,10 @@ namespace Sintaxis3
         // Factor -> identificador | numero | (Expresion)
         private void Factor(){
             if(getClasificacion() == clasificaciones.identificador){
-                match(clasificaciones.identificador);
+                Console.Write(getContenido()+" ");
+                match(clasificaciones.identificador);   //validar existencia
             }else if(getClasificacion() == clasificaciones.numero){
+                Console.Write(getContenido()+" ");
                 match(clasificaciones.numero);
             }else{
                 match("(");
@@ -217,7 +221,7 @@ namespace Sintaxis3
         private void For(){
             match("for");
             match("(");
-            match(clasificaciones.identificador);
+            match(clasificaciones.identificador);   //validar existencia
             match(clasificaciones.asignacion);
             Expresion();
 
@@ -225,7 +229,7 @@ namespace Sintaxis3
             Condicion();
             match(clasificaciones.fin_sentencia);
 
-            match(clasificaciones.identificador);
+            match(clasificaciones.identificador);   //validar existencia
             match(clasificaciones.incremento_termino);
             match(")");
             BloqueInstrucciones();
@@ -248,5 +252,9 @@ namespace Sintaxis3
             match(")");
             match(clasificaciones.fin_sentencia);
         }
+
+        //x26 = (3+5)*8-(10-4)/2
+        //x26 = 3+5*8-10-4/2
+        //x26 = 3 5 + 8 * 10 4 - 2 / -
     }
 }
