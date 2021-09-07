@@ -3,7 +3,7 @@ using System.IO;
 
 // REQUERIMIENTO 1: Implementar las secuencias de escape: \n, \t cuando se imprime una cadena 
 //                  y eliminar las dobles comillas
-// REQUERIMIENTO 2: 
+// REQUERIMIENTO 2: Levantar excepciones en la clase Stack
 
 
 namespace Sintaxis3
@@ -112,7 +112,7 @@ namespace Sintaxis3
                     match(clasificaciones.cadena);
                 }else{
                     Expresion();
-                    Console.Write(s.pop());
+                    Console.Write(s.pop(bitacora));
                 }
                 match(clasificaciones.fin_sentencia);
             }
@@ -189,19 +189,20 @@ namespace Sintaxis3
         private void MasTermino(){
             if(getClasificacion() == clasificaciones.operador_termino){
                 string operador = getContenido();
-                float e1  = s.pop(), e2 = s.pop();
                 match(clasificaciones.operador_termino);
                 Termino();
-                Console.Write(operador+" ");
+                float e1  = s.pop(bitacora), e2 = s.pop(bitacora);
+                //Console.Write(operador+" ");
 
                 switch(operador){
                     case "+":
-                        s.push(e2+e1);
+                        s.push(e2+e1, bitacora);
                         break;
                     case "-":
-                        s.push(e2-e1);
+                        s.push(e2-e1, bitacora);
                         break;
                 }
+                s.Display(bitacora);
             }
         }
         // Termino -> Factor PorFactor
@@ -213,19 +214,20 @@ namespace Sintaxis3
         private void PorFactor(){
             if(getClasificacion() == clasificaciones.operador_factor){
                 string operador = getContenido();
-                float e1  = s.pop(), e2 = s.pop();
                 match(clasificaciones.operador_factor);
                 Factor();
-                Console.Write(operador+" ");
+                float e1  = s.pop(bitacora), e2 = s.pop(bitacora);
+                //Console.Write(operador+" ");
 
                 switch(operador){
                     case "*":
-                        s.push(e2*e1);
+                        s.push(e2*e1, bitacora);
                         break;
                     case "/":
-                        s.push(e2/e1);
+                        s.push(e2/e1, bitacora);
                         break;
                 }
+                s.Display(bitacora);
             }
         }
         // Factor -> identificador | numero | (Expresion)
@@ -234,8 +236,9 @@ namespace Sintaxis3
                 Console.Write(getContenido()+" ");
                 match(clasificaciones.identificador);   //validar existencia
             }else if(getClasificacion() == clasificaciones.numero){
-                Console.Write(getContenido()+" ");
-                s.push(float.Parse(getContenido()));
+                //Console.Write(getContenido()+" ");
+                s.push(float.Parse(getContenido()), bitacora);
+                s.Display(bitacora);
                 match(clasificaciones.numero);
             }else{
                 match("(");
