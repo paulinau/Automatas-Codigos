@@ -4,6 +4,10 @@ using System.IO;
 // REQUERIMIENTO 1: Implementar las secuencias de escape: \n, \t cuando se imprime una cadena 
 //                  y eliminar las dobles comillas
 // REQUERIMIENTO 2: Levantar excepciones en la clase Stack
+// REQUERIMIENTO 3: Agregar el tipo de dato en el Inserta de listaVariables
+// REQUERIMIENTO 4: Validar existencia o duplicidad de variables
+//                  Mensaje de error: "Error de sintaxis: La variable (x26) no ha sido declarada"
+//                  Mensaje de error: "Error de sintaxis: La variable (x26) esta duplicada"
 
 
 namespace Sintaxis3
@@ -11,13 +15,16 @@ namespace Sintaxis3
     class Lenguaje : Sintaxis
     {
         Stack s;
+        ListaVariables l;
         public Lenguaje(){
             s = new Stack(5);
+            l = new ListaVariables();
             Console.WriteLine("Iniciando analisis gramatical");
         }
 
         public Lenguaje(string nombre) : base(nombre){
             s = new Stack(5);
+            l = new ListaVariables();
             Console.WriteLine("Iniciando analisis gramatical");
         }
 
@@ -25,6 +32,7 @@ namespace Sintaxis3
         public void Programa(){
             Libreria();
             Main();
+            l.Imprime(bitacora);
         }
         // Libreria -> (#include <identificador(.h)?> Libreria) ?
         private void Libreria(){
@@ -62,7 +70,16 @@ namespace Sintaxis3
 
         //Lista_IDs -> identificador (,Lista_IDs)?
         private void Lista_IDs(){
+            string nombre = getContenido();
             match(clasificaciones.identificador); //validar duplicidad
+
+            if(!l.Existe(nombre)){
+                l.Inserta(nombre, Variable.tipo.CHAR);
+            }else{
+                //levantar excepcion
+                throw new Error(bitacora, "Error de sintaxis: Variable duplicada (" + nombre + ")"+ " ("+linea+", "+caracter+")");
+            }
+            
 
             if(getClasificacion() == clasificaciones.asignacion){
                 match(clasificaciones.asignacion);
@@ -150,7 +167,7 @@ namespace Sintaxis3
                 Console.Write(getContenido());
                 match(clasificaciones.cadena);
             }else{
-                Console.Write(getContenido());
+                //Console.Write(getContenido());
                 match(clasificaciones.identificador);   //validar existencia
             }
 
@@ -254,8 +271,8 @@ namespace Sintaxis3
             match(clasificaciones.identificador);   //validar existencia
             match(clasificaciones.asignacion);
             Expresion();
-
             match(clasificaciones.fin_sentencia);
+            
             Condicion();
             match(clasificaciones.fin_sentencia);
 

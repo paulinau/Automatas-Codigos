@@ -15,6 +15,11 @@ namespace Sintaxis3
             valor = "";
         }
 
+        public string getNombre(){
+            return nombre;
+        }
+
+
         public void setValor(string nuevoValor){
             valor = nuevoValor;
         }
