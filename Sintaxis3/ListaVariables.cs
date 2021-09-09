@@ -11,8 +11,8 @@ namespace Sintaxis3
             lista = new List<Variable>();
         }
 
-        public void Inserta(string nombre, Variable.tipo tipoDato){
-            lista.Add(new Variable(nombre, tipoDato));
+        public void Inserta(string nombre, Variable.tipo tipoDato, bool esConstante=false){
+            lista.Add(new Variable(nombre, tipoDato, esConstante));
         }
 
         public bool Existe(string nombre){
@@ -49,8 +49,9 @@ namespace Sintaxis3
         public void Imprime(StreamWriter bitacora){
             bitacora.WriteLine("Lista de Variables: ");
             foreach(Variable x in lista){
-                bitacora.WriteLine(x.getNombre()+" "+x.getValor()+" "+x.getTipoDato());
+                bitacora.WriteLine(x.getNombre()+" "+x.getValor()+" "+x.getTipoDato()+" "+ (x.getEsConstante()? "Constante":"Variable"));
             }
+
         }
     }
 }

@@ -20,6 +20,7 @@ namespace Sintaxis3
             }catch(Exception e){
                 Console.Write(e.Message);
             }
+            Console.ReadKey();
         }
     }
 }

@@ -6,7 +6,6 @@ namespace Sintaxis3
     {
         int maxElementos;
         int ultimo;
-
         float[] elementos;
 
         public Stack(int maxElementos){
