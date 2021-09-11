@@ -8,6 +8,7 @@ using System;
 //                  "Error de sintaxis: La variable (x26) no ha sido declarada."
 //                  "Error de sintaxis: La variables (x26) está duplicada."
 // Requerimiento 5: Modificar el valor de la variable o constante al momento de su declaración
+//                  en el cin
 
 namespace Sintaxis3{
     class Lenguaje: Sintaxis{
@@ -114,6 +115,7 @@ namespace Sintaxis3{
             }else if (getContenido() == "if"){
                 If();
             }else if (getContenido() == "cin"){
+                //Requerimiento 5
                 match("cin");
                 match(clasificaciones.flujo_entrada);
                 match(clasificaciones.identificador); // Validar existencia
@@ -132,6 +134,7 @@ namespace Sintaxis3{
                 match(clasificaciones.asignacion);
 
                 string valor;
+
                 if (getClasificacion() == clasificaciones.cadena){
                     valor = getContenido();
                     match(clasificaciones.cadena);
@@ -192,7 +195,14 @@ namespace Sintaxis3{
                 Console.Write(caracteres);
                 match(clasificaciones.cadena);
             }else{
-                match(clasificaciones.identificador); // Validar existencia
+                string nombre = getContenido();
+                if(l.Existe(nombre)){
+                    Console.Write(l.getValor(nombre));
+                    match(clasificaciones.identificador); // Validar existencia
+                }else{
+                    //levantar excepcion
+                }
+               
             }
 
             if (getClasificacion() == clasificaciones.flujo_salida){
@@ -279,6 +289,8 @@ namespace Sintaxis3{
         private void Factor(){
             if (getClasificacion() == clasificaciones.identificador){
                 Console.Write(getContenido() + " ");
+                s.push(float.Parse(l.getValor(getContenido()), bitacora);
+                s.Display(bitacora);
                 match(clasificaciones.identificador); // Validar existencia
             }else if (getClasificacion() == clasificaciones.numero){
                 // Console.Write(getContenido() + " ");
