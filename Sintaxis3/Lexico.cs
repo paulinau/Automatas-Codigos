@@ -110,7 +110,7 @@ namespace Sintaxis3
         //Destructor
         //~ Lexico(){
         public void Dispose(){
-            Console.WriteLine("Finaliza la compilación de "+nombre_archivo);
+            Console.WriteLine("\nFinaliza la compilación de "+nombre_archivo);
             CerrarArchivos();   //invoca el metodo para cerrar los archivos
         }
 

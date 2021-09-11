@@ -19,16 +19,17 @@ namespace Sintaxis3
                 bitacora.WriteLine("Push ="+element);
                 elementos[ultimo++] = element;
             }
-            //else levantar excepcion de stackOverFlow
+            throw new StackOverflowException("Error StackOverflow: No se pueden agregar mas elementos a la pila llena.", new Error(bitacora, "Error StackOverflow: No se pueden agregar mas elementos a la pila."));
         }
 
         public float pop(StreamWriter bitacora){
             if(ultimo >0){
                 bitacora.WriteLine("Pop ="+elementos[ultimo-1]);
                 return elementos[--ultimo];
+            }else{
+                //else levantar excepcion de stackUnderFlow
+                throw new Error(bitacora, "Error StackUnderflow: No se pueden sacar elementos de una pila vacía.");
             }
-            //else levantar excepcion de stackUnderFlow
-            return 0;
         }
 
         public void Display(StreamWriter bitacora){
