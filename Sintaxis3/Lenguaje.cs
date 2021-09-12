@@ -4,7 +4,7 @@ using System.Text;
 
 // ✎ Requerimiento 1: Implementar las secuencias de escape: \n, \t cuando se imprime una cadena y 
 //                  eliminar las dobles comillas.
-// Requerimiento 2: Levantar excepciones en la clase Stack.
+// ✎ Requerimiento 2: Levantar excepciones en la clase Stack.
 // Requerimiento 3: Agregar el tipo de dato en el Inserta de ListaVariables.
 // Requerimiento 4: Validar existencia o duplicidad de variables. Mensaje de error: 
 //                  "Error de sintaxis: La variable (x26) no ha sido declarada."
@@ -73,12 +73,13 @@ namespace Sintaxis3{
         }
 
         // Lista_IDs -> identificador (= Expresion)? (,Lista_IDs)? 
-        private void Lista_IDs(){          
+        private void Lista_IDs(Variable.tipo tipoDato){          
             string nombre = getContenido();
-            match(clasificaciones.identificador); // Validar duplicidad
+            match(clasificaciones.identificador); // Validar duplicidad :D
 
             if (!l.Existe(nombre)){
-                l.Inserta(nombre, Variable.tipo.CHAR);
+                l.Inserta(nombre, tipoDato);
+                //match(clasificaciones.identificador); // Validar duplicidad :D
             }else{
                 throw new Error(bitacora, "Error de sintaxis: La variable (" + nombre + ") esta duplicada en la linea: " + linea + ", caracter: " + caracter);
             }                
@@ -86,18 +87,39 @@ namespace Sintaxis3{
             if (getClasificacion() == clasificaciones.asignacion){
                 match(clasificaciones.asignacion);
                 Expresion();
+                l.setValor(nombre, s.pop(bitacora).ToString());
             }
 
             if (getContenido() == ","){
                 match(",");
-                Lista_IDs();
+                Lista_IDs(tipoDato);
             }
         }
 
         // Variables -> tipo_dato Lista_IDs; 
         private void Variables(){
+            string tipo = getContenido();
             match(clasificaciones.tipo_dato);
-            Lista_IDs();
+
+            Variable.tipo tipoDato;
+            switch (tipo) {
+                case "int":
+                    tipoDato = Variable.tipo.INT;
+                    break;
+                case "float":
+                    tipoDato = Variable.tipo.FLOAT;
+                    break;
+                case "string":
+                    tipoDato = Variable.tipo.STRING;
+                    break;
+                case "char":
+                    tipoDato = Variable.tipo.CHAR;
+                    break;
+                default:
+                    tipoDato = Variable.tipo.CHAR;
+                    break;
+            }
+            Lista_IDs(tipoDato);
             match(clasificaciones.fin_sentencia);           
         }
 
@@ -115,7 +137,17 @@ namespace Sintaxis3{
                 // Requerimiento 5
                 match("cin");
                 match(clasificaciones.flujo_entrada);
-                match(clasificaciones.identificador); // Validar existencia
+
+                string nombre = getContenido();
+                
+                if (!l.Existe(nombre)){
+                    throw new Error(bitacora, "Error de sintaxis: La variable (" + nombre + ") no ha sido declarada. Linea: " + linea + ", caracter: " + caracter);
+                }else{
+                    string valor = Console.ReadLine();
+                    match(clasificaciones.identificador); // Validar existencia :D
+                    l.setValor(nombre, valor);
+                }
+
                 match(clasificaciones.fin_sentencia);
             }else if (getContenido() == "cout"){
                 match("cout");
@@ -127,7 +159,12 @@ namespace Sintaxis3{
                 Variables();
             }else{
                 string nombre = getContenido();
-                match(clasificaciones.identificador); // Validar existencia
+                
+                if (!l.Existe(nombre)){
+                    throw new Error(bitacora, "Error de sintaxis: La variable (" + nombre + ") no ha sido declarada. Linea: " + linea + ", caracter: " + caracter);
+                }else{
+                    match(clasificaciones.identificador); // Validar existencia :D
+                }
                 match(clasificaciones.asignacion);
 
                 string valor;
@@ -156,16 +193,47 @@ namespace Sintaxis3{
         // Constante -> const tipo_dato identificador = numero | cadena;
         private void Constante(){
             match("const");
+            string tipo = getContenido();
             match(clasificaciones.tipo_dato);
-            match(clasificaciones.identificador); // Validar duplicidad
+
+            Variable.tipo tipoDato;
+            switch (tipo) {
+                case "int":
+                    tipoDato = Variable.tipo.INT;
+                    break;
+                case "float":
+                    tipoDato = Variable.tipo.FLOAT;
+                    break;
+                case "string":
+                    tipoDato = Variable.tipo.STRING;
+                    break;
+                case "char":
+                    tipoDato = Variable.tipo.CHAR;
+                    break;
+                default:
+                    tipoDato = Variable.tipo.CHAR;
+                    break;
+            }
+
+            string nombre = getContenido();
+            match(clasificaciones.identificador); // Validar duplicidad :D
+
+            if (!l.Existe(nombre)){
+                l.Inserta(nombre, tipoDato, true);
+                //match(clasificaciones.identificador); // Validar duplicidad :D
+            }else{
+                throw new Error(bitacora, "Error de sintaxis: La variable (" + nombre + ") esta duplicada en la linea: " + linea + ", caracter: " + caracter);
+            } 
             match(clasificaciones.asignacion);
+
+            string valor = getContenido();
 
             if (getClasificacion() == clasificaciones.numero){
                 match(clasificaciones.numero);
             }else{
                 match(clasificaciones.cadena);
             }
-         
+            l.setValor(nombre, valor);
             match(clasificaciones.fin_sentencia);
         }
 
@@ -192,11 +260,10 @@ namespace Sintaxis3{
                 string nombre = getContenido();
                 if (l.Existe(nombre)){
                     Console.Write(l.getValor(nombre));
-                    match(clasificaciones.identificador); // Validar existencia 
+                    match(clasificaciones.identificador); // Validar existencia :D
                 }
-                else
-                {
-                    //levantar excepcion
+                else{
+                    throw new Error(bitacora, "Error de sintaxis: La variable (" + nombre + ") no ha sido declarada. Linea: " + linea + ", caracter: " + caracter);
                 }             
             }
 
@@ -281,11 +348,21 @@ namespace Sintaxis3{
         // Factor -> identificador | numero | ( Expresion )
         private void Factor(){
             if (getClasificacion() == clasificaciones.identificador){
-                Console.Write(getContenido() + " ");
+                //Console.Write(getContenido() + " ");
 
                 s.push(float.Parse(l.getValor(getContenido())), bitacora);
                 s.Display(bitacora);
-                match(clasificaciones.identificador); // Validar existencia
+
+                string nombre = getContenido();
+                
+                if (!l.Existe(nombre)){
+                    throw new Error(bitacora, "Error de sintaxis: La variable (" + nombre + ") no ha sido declarada. Linea: " + linea + ", caracter: " + caracter);
+                }else{
+                    //s.push(float.Parse(l.getValor(getContenido())), bitacora);
+                    //s.Display(bitacora);
+                    match(clasificaciones.identificador); // Validar existencia :D
+                }
+
             }else if (getClasificacion() == clasificaciones.numero){
                 // Console.Write(getContenido() + " ");
                 s.push(float.Parse(getContenido()), bitacora);
@@ -304,7 +381,13 @@ namespace Sintaxis3{
 
             match("(");
 
-            match(clasificaciones.identificador); // Validar existencia
+            string nombre = getContenido();
+                
+            if (!l.Existe(nombre)){
+                throw new Error(bitacora, "Error de sintaxis: La variable (" + nombre + ") no ha sido declarada. Linea: " + linea + ", caracter: " + caracter);
+            }else{
+                match(clasificaciones.identificador); // Validar existencia :D
+            }
             match(clasificaciones.asignacion);
             Expresion();
             match(clasificaciones.fin_sentencia);
@@ -312,7 +395,11 @@ namespace Sintaxis3{
             Condicion();
             match(clasificaciones.fin_sentencia);
 
-            match(clasificaciones.identificador); // Validar existencia
+            if (!l.Existe(nombre)){
+                throw new Error(bitacora, "Error de sintaxis: La variable (" + nombre + ") no ha sido declarada. Linea: " + linea + ", caracter: " + caracter);
+            }else{
+                match(clasificaciones.identificador); // Validar existencia :D
+            }
             match(clasificaciones.incremento_termino);
 
             match(")");

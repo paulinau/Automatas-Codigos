@@ -20,7 +20,7 @@ namespace Sintaxis3
                 //sacamos un token
                 nextToken();
             }else{
-                throw new Error(bitacora, "Error de sintaxis: Se espera un " + espera + " en la linea: " + linea + ", caracter: " + caracter);
+                throw new Error(bitacora, "Error de sintaxis: Se espera un(a) " + espera + " en la linea: " + linea + ", caracter: " + caracter);
             }
         }
 
@@ -29,7 +29,7 @@ namespace Sintaxis3
             if(espera == getClasificacion()){
                 nextToken();
             }else{
-                 throw new Error(bitacora, "Error de sintaxis: Se espera un " + espera + " en la linea: " + linea + ", caracter: " + caracter);
+                 throw new Error(bitacora, "Error de sintaxis: Se espera un(a) " + espera + " en la linea: " + linea + ", caracter: " + caracter);
             }
         }
     }
