@@ -10,7 +10,7 @@ using System.Text;
 // ✎ Requerimiento 4: Validar existencia o duplicidad de variables. Mensaje de error: 
 //                  "Error de sintaxis: La variable (x26) no ha sido declarada."
 //                  "Error de sintaxis: La variables (x26) está duplicada." 
-// Requerimiento 5: Modificar el valor de la variable o constante al momento de su declaración.
+// ✎ Requerimiento 5: Modificar el valor de la variable o constante al momento de su declaración.
 
 namespace Sintaxis3{
     class Lenguaje: Sintaxis{
@@ -76,11 +76,10 @@ namespace Sintaxis3{
         // Lista_IDs -> identificador (= Expresion)? (,Lista_IDs)? 
         private void Lista_IDs(Variable.tipo tipoDato){          
             string nombre = getContenido();
-            match(clasificaciones.identificador); // Validar duplicidad :D
 
             if (!l.Existe(nombre)){
                 l.Inserta(nombre, tipoDato);
-                //match(clasificaciones.identificador); // Validar duplicidad :D
+                match(clasificaciones.identificador); // Validar duplicidad :D
             }else{
                 throw new Error(bitacora, "Error de sintaxis: La variable (" + nombre + ") esta duplicada en la linea: " + linea + ", caracter: " + caracter);
             }                
@@ -88,7 +87,7 @@ namespace Sintaxis3{
             if (getClasificacion() == clasificaciones.asignacion){
                 match(clasificaciones.asignacion);
                 Expresion();
-                l.setValor(nombre, s.pop(bitacora).ToString());
+                l.setValor(nombre, s.pop(bitacora, linea, caracter).ToString());
             }
 
             if (getContenido() == ","){
@@ -175,7 +174,7 @@ namespace Sintaxis3{
                     match(clasificaciones.cadena);                    
                 }else{                    
                     Expresion();
-                    valor = s.pop(bitacora).ToString();                  
+                    valor = s.pop(bitacora, linea, caracter).ToString();                  
                 }                
                 l.setValor(nombre, valor);
                 match(clasificaciones.fin_sentencia);
@@ -217,11 +216,10 @@ namespace Sintaxis3{
             }
 
             string nombre = getContenido();
-            match(clasificaciones.identificador); // Validar duplicidad :D
 
             if (!l.Existe(nombre)){
                 l.Inserta(nombre, tipoDato, true);
-                //match(clasificaciones.identificador); // Validar duplicidad :D
+                match(clasificaciones.identificador); // Validar duplicidad :D
             }else{
                 throw new Error(bitacora, "Error de sintaxis: La variable (" + nombre + ") esta duplicada en la linea: " + linea + ", caracter: " + caracter);
             } 
@@ -306,15 +304,15 @@ namespace Sintaxis3{
                 string operador = getContenido();                              
                 match(clasificaciones.operador_termino);
                 Termino();
-                float e1 = s.pop(bitacora), e2 = s.pop(bitacora);  
+                float e1 = s.pop(bitacora, linea, caracter), e2 = s.pop(bitacora, linea, caracter);  
                 // Console.Write(operador + " ");
 
                 switch(operador){
                     case "+":
-                        s.push(e2+e1, bitacora);
+                        s.push(e2+e1, bitacora, linea, caracter);
                         break;
                     case "-":
-                        s.push(e2-e1, bitacora);
+                        s.push(e2-e1, bitacora, linea, caracter);
                         break;                    
                 }
                 s.Display(bitacora);
@@ -331,15 +329,15 @@ namespace Sintaxis3{
                 string operador = getContenido();                
                 match(clasificaciones.operador_factor);
                 Factor();
-                float e1 = s.pop(bitacora), e2 = s.pop(bitacora); 
+                float e1 = s.pop(bitacora, linea, caracter), e2 = s.pop(bitacora, linea, caracter); 
                 // Console.Write(operador + " ");
 
                 switch(operador){
                     case "*":
-                        s.push(e2*e1, bitacora);                        
+                        s.push(e2*e1, bitacora, linea, caracter);                        
                         break;
                     case "/":
-                        s.push(e2/e1, bitacora);
+                        s.push(e2/e1, bitacora, linea, caracter);
                         break;                    
                 }
 
@@ -351,7 +349,7 @@ namespace Sintaxis3{
             if (getClasificacion() == clasificaciones.identificador){
                 //Console.Write(getContenido() + " ");
 
-                s.push(float.Parse(l.getValor(getContenido())), bitacora);
+                s.push(float.Parse(l.getValor(getContenido())), bitacora, linea, caracter);
                 s.Display(bitacora);
 
                 string nombre = getContenido();
@@ -366,7 +364,7 @@ namespace Sintaxis3{
 
             }else if (getClasificacion() == clasificaciones.numero){
                 // Console.Write(getContenido() + " ");
-                s.push(float.Parse(getContenido()), bitacora);
+                s.push(float.Parse(getContenido()), bitacora, linea, caracter);
                 s.Display(bitacora);
                 match(clasificaciones.numero);
             }else{

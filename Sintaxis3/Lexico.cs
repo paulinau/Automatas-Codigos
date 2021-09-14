@@ -155,13 +155,13 @@ namespace Sintaxis3
             //se produjo una excepcion
             if (estado == E){
                 if(getClasificacion() == clasificaciones.cadena){
-                    throw new Error(bitacora, "Error lexico: Se esperaba comillas (\") o comilla (') de cierre. (" + linea + ", " + caracter + ")");
+                    throw new Error(bitacora, "Error lexico: Se esperaba comillas (\") o comilla (') de cierre. Linea: " + linea + ", caracter:" + caracter);
                 }
                 else if (getClasificacion() == clasificaciones.numero){
-                    throw new Error(bitacora, "Error lexico: Se esperaba un dígito. (" + linea + ", " + caracter + ")");
+                    throw new Error(bitacora, "Error lexico: Se esperaba un dígito. Linea: " + linea + ", caracter: " + caracter);
                 }
                 else{
-                    throw new Error(bitacora, "Error lexico: Se esperaba un cierre de comentario (*/). (" + linea + ", " + caracter + ")");
+                    throw new Error(bitacora, "Error lexico: Se esperaba un cierre de comentario (*/). Linea: " + linea + ", caracter:" + caracter );
                 }      
             }else if (getClasificacion() == clasificaciones.identificador){
                 switch(palabra){
