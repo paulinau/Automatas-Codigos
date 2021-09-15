@@ -349,16 +349,13 @@ namespace Sintaxis3{
             if (getClasificacion() == clasificaciones.identificador){
                 //Console.Write(getContenido() + " ");
 
-                s.push(float.Parse(l.getValor(getContenido())), bitacora, linea, caracter);
-                s.Display(bitacora);
-
                 string nombre = getContenido();
                 
                 if (!l.Existe(nombre)){
                     throw new Error(bitacora, "Error de sintaxis: La variable (" + nombre + ") no ha sido declarada. Linea: " + linea + ", caracter: " + caracter);
                 }else{
-                    //s.push(float.Parse(l.getValor(getContenido())), bitacora);
-                    //s.Display(bitacora);
+                    s.push(float.Parse(l.getValor(getContenido())), bitacora, linea, caracter);
+                    s.Display(bitacora);
                     match(clasificaciones.identificador); // Validar existencia :D
                 }
 

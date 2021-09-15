@@ -19,7 +19,7 @@ namespace Sintaxis3
                 bitacora.WriteLine("Push ="+element);
                 elementos[ultimo++] = element;
             }else{
-                 throw new StackOverflowException("Error StackOverflow: No se pueden agregar mas elementos a la pila llena. Linea: "+linea+", caracter: "+caracter, new Error(bitacora, "Error StackOverflow: No se pueden agregar mas elementos a la pila. Linea: "+linea+", caracter: "+caracter));
+                throw new StackOverflowException("Error StackOverflow: No se pueden agregar mas elementos a la pila llena. Linea: "+linea+", caracter: "+caracter, new Error(bitacora, "Error StackOverflow: No se pueden agregar mas elementos a la pila. Linea: "+linea+", caracter: "+caracter));
             }  
         }
 
