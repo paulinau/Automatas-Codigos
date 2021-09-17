@@ -86,8 +86,15 @@ namespace Sintaxis3{
 
             if (getClasificacion() == clasificaciones.asignacion){
                 match(clasificaciones.asignacion);
-                Expresion();
-                l.setValor(nombre, s.pop(bitacora, linea, caracter).ToString());
+                
+                if (getClasificacion() == clasificaciones.cadena){           
+                    string valor = getContenido();
+                    l.setValor(nombre, valor);         
+                    match(clasificaciones.cadena);                    
+                }else{                    
+                    Expresion();
+                    l.setValor(nombre, s.pop(bitacora, linea, caracter).ToString());                  
+                }
             }
 
             if (getContenido() == ","){
