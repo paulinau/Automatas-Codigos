@@ -3,9 +3,10 @@ using System.IO;
 
 namespace Sintaxis3
 {
-    class Token: Error
+    class Token : Error
     {
-        public enum clasificaciones{
+        public enum clasificaciones
+        {
             identificador, numero, asignacion, inicializacion, fin_sentencia,
             operador_logico, operador_relacional, operador_termino, operador_factor,
             incremento_termino, incremento_factor, cadena, operador_ternario, caracter,
@@ -14,20 +15,24 @@ namespace Sintaxis3
         }
         private string contenido;
         private clasificaciones clasificacion;
-        
-        public void setContenido(string contenido){
+
+        public void setContenido(string contenido)
+        {
             this.contenido = contenido;
         }
 
-        public void setClasificacion(clasificaciones clasificacion){
+        public void setClasificacion(clasificaciones clasificacion)
+        {
             this.clasificacion = clasificacion;
         }
 
-        public string getContenido(){
+        public string getContenido()
+        {
             return contenido;
         }
 
-        public clasificaciones getClasificacion(){
+        public clasificaciones getClasificacion()
+        {
             return clasificacion;
         }
     }

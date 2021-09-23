@@ -5,31 +5,41 @@ namespace Sintaxis3
 {
     class Sintaxis : Lexico
     {
-        public Sintaxis(){
+        public Sintaxis()
+        {
             Console.WriteLine("Iniciando analisis sintactico");
             nextToken();
         }
 
-        public Sintaxis(string nombre) : base(nombre){
+        public Sintaxis(string nombre) : base(nombre)
+        {
             Console.WriteLine("Iniciando analisis sintactico");
             nextToken();
         }
-        protected void match(string espera){
+        protected void match(string espera)
+        {
             //Console.WriteLine(getContenido() + " "+espera);
-            if(espera == getContenido()){
+            if (espera == getContenido())
+            {
                 //sacamos un token
                 nextToken();
-            }else{
+            }
+            else
+            {
                 throw new Error(bitacora, "Error de sintaxis: Se espera un(a) " + espera + " en la linea: " + linea + ", caracter: " + caracter);
             }
         }
 
-        protected void match(clasificaciones espera){
+        protected void match(clasificaciones espera)
+        {
             //Console.WriteLine(getContenido() + " "+espera);
-            if(espera == getClasificacion()){
+            if (espera == getClasificacion())
+            {
                 nextToken();
-            }else{
-                 throw new Error(bitacora, "Error de sintaxis: Se espera un(a) " + espera + " en la linea: " + linea + ", caracter: " + caracter);
+            }
+            else
+            {
+                throw new Error(bitacora, "Error de sintaxis: Se espera un(a) " + espera + " en la linea: " + linea + ", caracter: " + caracter);
             }
         }
     }

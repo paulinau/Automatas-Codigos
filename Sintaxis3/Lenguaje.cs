@@ -12,38 +12,46 @@ using System.Text;
 //                  "Error de sintaxis: La variables (x26) está duplicada." 
 // ✎ Requerimiento 5: Modificar el valor de la variable o constante al momento de su declaración.
 
-namespace Sintaxis3{
-    class Lenguaje: Sintaxis{
+namespace Sintaxis3
+{
+    class Lenguaje : Sintaxis
+    {
         Stack s;
         ListaVariables l;
-        public Lenguaje(){            
+        public Lenguaje()
+        {
             s = new Stack(5);
             l = new ListaVariables();
             Console.WriteLine("Iniciando analisis gramatical.");
         }
 
-        public Lenguaje(string nombre): base(nombre){
+        public Lenguaje(string nombre) : base(nombre)
+        {
             s = new Stack(5);
             l = new ListaVariables();
             Console.WriteLine("Iniciando analisis gramatical.");
         }
 
         // Programa -> Libreria Main
-        public void Programa(){
+        public void Programa()
+        {
             Libreria();
             Main();
             l.Imprime(bitacora);
         }
 
         // Libreria -> (#include <identificador(.h)?> Libreria) ?
-        private void Libreria(){            
-            if (getContenido() == "#"){
+        private void Libreria()
+        {
+            if (getContenido() == "#")
+            {
                 match("#");
                 match("include");
                 match("<");
                 match(clasificaciones.identificador);
 
-                if (getContenido() == "."){
+                if (getContenido() == ".")
+                {
                     match(".");
                     match("h");
                 }
@@ -55,17 +63,19 @@ namespace Sintaxis3{
         }
 
         // Main -> tipo_dato main() BloqueInstrucciones 
-        private void Main(){
+        private void Main()
+        {
             match(clasificaciones.tipo_dato);
             match("main");
             match("(");
             match(")");
 
-            BloqueInstrucciones();            
+            BloqueInstrucciones();
         }
 
         // BloqueInstrucciones -> { Instrucciones }
-        private void BloqueInstrucciones(){
+        private void BloqueInstrucciones()
+        {
             match(clasificaciones.inicio_bloque);
 
             Instrucciones();
@@ -74,42 +84,53 @@ namespace Sintaxis3{
         }
 
         // Lista_IDs -> identificador (= Expresion)? (,Lista_IDs)? 
-        private void Lista_IDs(Variable.tipo tipoDato){          
+        private void Lista_IDs(Variable.tipo tipoDato)
+        {
             string nombre = getContenido();
 
-            if (!l.Existe(nombre)){
+            if (!l.Existe(nombre))
+            {
                 l.Inserta(nombre, tipoDato);
                 match(clasificaciones.identificador); // Validar duplicidad :D
-            }else{
+            }
+            else
+            {
                 throw new Error(bitacora, "Error de sintaxis: La variable (" + nombre + ") esta duplicada en la linea: " + linea + ", caracter: " + caracter);
-            }                
+            }
 
-            if (getClasificacion() == clasificaciones.asignacion){
+            if (getClasificacion() == clasificaciones.asignacion)
+            {
                 match(clasificaciones.asignacion);
-                
-                if (getClasificacion() == clasificaciones.cadena){           
+
+                if (getClasificacion() == clasificaciones.cadena)
+                {
                     string valor = getContenido();
-                    l.setValor(nombre, valor);         
-                    match(clasificaciones.cadena);                    
-                }else{                    
+                    l.setValor(nombre, valor);
+                    match(clasificaciones.cadena);
+                }
+                else
+                {
                     Expresion();
-                    l.setValor(nombre, s.pop(bitacora, linea, caracter).ToString());                  
+                    l.setValor(nombre, s.pop(bitacora, linea, caracter).ToString());
                 }
             }
 
-            if (getContenido() == ","){
+            if (getContenido() == ",")
+            {
                 match(",");
                 Lista_IDs(tipoDato);
             }
         }
 
         // Variables -> tipo_dato Lista_IDs; 
-        private void Variables(){
+        private void Variables()
+        {
             string tipo = getContenido();
             match(clasificaciones.tipo_dato);
 
             Variable.tipo tipoDato;
-            switch (tipo) {
+            switch (tipo)
+            {
                 case "int":
                     tipoDato = Variable.tipo.INT;
                     break;
@@ -127,84 +148,115 @@ namespace Sintaxis3{
                     break;
             }
             Lista_IDs(tipoDato);
-            match(clasificaciones.fin_sentencia);           
+            match(clasificaciones.fin_sentencia);
         }
 
         // Instruccion -> (If | cin | cout | const | Variables | asignacion) ;
-        private void Instruccion(){
-            if (getContenido() == "do"){
+        private void Instruccion()
+        {
+            if (getContenido() == "do")
+            {
                 DoWhile();
-            }else if (getContenido() == "while"){
+            }
+            else if (getContenido() == "while")
+            {
                 While();
-            }else if (getContenido() == "for"){
+            }
+            else if (getContenido() == "for")
+            {
                 For();
-            }else if (getContenido() == "if"){
+            }
+            else if (getContenido() == "if")
+            {
                 If();
-            }else if (getContenido() == "cin"){
+            }
+            else if (getContenido() == "cin")
+            {
                 // Requerimiento 5
                 match("cin");
                 match(clasificaciones.flujo_entrada);
 
                 string nombre = getContenido();
-                
-                if (!l.Existe(nombre)){
+
+                if (!l.Existe(nombre))
+                {
                     throw new Error(bitacora, "Error de sintaxis: La variable (" + nombre + ") no ha sido declarada. Linea: " + linea + ", caracter: " + caracter);
-                }else{
+                }
+                else
+                {
                     string valor = Console.ReadLine();
                     match(clasificaciones.identificador); // Validar existencia :D
                     l.setValor(nombre, valor);
                 }
 
                 match(clasificaciones.fin_sentencia);
-            }else if (getContenido() == "cout"){
+            }
+            else if (getContenido() == "cout")
+            {
                 match("cout");
                 ListaFlujoSalida();
                 match(clasificaciones.fin_sentencia);
-            }else if (getContenido() == "const"){
+            }
+            else if (getContenido() == "const")
+            {
                 Constante();
-            }else if (getClasificacion() == clasificaciones.tipo_dato){
+            }
+            else if (getClasificacion() == clasificaciones.tipo_dato)
+            {
                 Variables();
-            }else{
+            }
+            else
+            {
                 string nombre = getContenido();
-                
-                if (!l.Existe(nombre)){
+
+                if (!l.Existe(nombre))
+                {
                     throw new Error(bitacora, "Error de sintaxis: La variable (" + nombre + ") no ha sido declarada. Linea: " + linea + ", caracter: " + caracter);
-                }else{
+                }
+                else
+                {
                     match(clasificaciones.identificador); // Validar existencia :D
                 }
                 match(clasificaciones.asignacion);
 
                 string valor;
 
-                if (getClasificacion() == clasificaciones.cadena){           
-                    valor = getContenido();         
-                    match(clasificaciones.cadena);                    
-                }else{                    
+                if (getClasificacion() == clasificaciones.cadena)
+                {
+                    valor = getContenido();
+                    match(clasificaciones.cadena);
+                }
+                else
+                {
                     Expresion();
-                    valor = s.pop(bitacora, linea, caracter).ToString();                  
-                }                
+                    valor = s.pop(bitacora, linea, caracter).ToString();
+                }
                 l.setValor(nombre, valor);
                 match(clasificaciones.fin_sentencia);
             }
         }
 
         // Instrucciones -> Instruccion Instrucciones?
-        private void Instrucciones(){
+        private void Instrucciones()
+        {
             Instruccion();
 
-            if (getClasificacion() != clasificaciones.fin_bloque){
+            if (getClasificacion() != clasificaciones.fin_bloque)
+            {
                 Instrucciones();
             }
         }
 
         // Constante -> const tipo_dato identificador = numero | cadena;
-        private void Constante(){
+        private void Constante()
+        {
             match("const");
             string tipo = getContenido();
             match(clasificaciones.tipo_dato);
 
             Variable.tipo tipoDato;
-            switch (tipo) {
+            switch (tipo)
+            {
                 case "int":
                     tipoDato = Variable.tipo.INT;
                     break;
@@ -224,19 +276,25 @@ namespace Sintaxis3{
 
             string nombre = getContenido();
 
-            if (!l.Existe(nombre)){
+            if (!l.Existe(nombre))
+            {
                 l.Inserta(nombre, tipoDato, true);
                 match(clasificaciones.identificador); // Validar duplicidad :D
-            }else{
+            }
+            else
+            {
                 throw new Error(bitacora, "Error de sintaxis: La variable (" + nombre + ") esta duplicada en la linea: " + linea + ", caracter: " + caracter);
-            } 
+            }
             match(clasificaciones.asignacion);
 
             string valor = getContenido();
 
-            if (getClasificacion() == clasificaciones.numero){
+            if (getClasificacion() == clasificaciones.numero)
+            {
                 match(clasificaciones.numero);
-            }else{
+            }
+            else
+            {
                 match(clasificaciones.cadena);
             }
             l.setValor(nombre, valor);
@@ -244,13 +302,17 @@ namespace Sintaxis3{
         }
 
         // ListaFlujoSalida -> << cadena | identificador | numero (ListaFlujoSalida)?
-        private void ListaFlujoSalida(){
+        private void ListaFlujoSalida()
+        {
             match(clasificaciones.flujo_salida);
 
-            if (getClasificacion() == clasificaciones.numero){
+            if (getClasificacion() == clasificaciones.numero)
+            {
                 Console.Write(getContenido());
-                match(clasificaciones.numero); 
-            }else if (getClasificacion() == clasificaciones.cadena){    
+                match(clasificaciones.numero);
+            }
+            else if (getClasificacion() == clasificaciones.cadena)
+            {
                 string contenido = getContenido();
 
                 if (contenido.Contains("\""))
@@ -262,38 +324,46 @@ namespace Sintaxis3{
 
                 Console.Write(contenido);
                 match(clasificaciones.cadena);
-            }else{
+            }
+            else
+            {
                 string nombre = getContenido();
-                if (l.Existe(nombre)){
+                if (l.Existe(nombre))
+                {
                     Console.Write(l.getValor(nombre));
                     match(clasificaciones.identificador); // Validar existencia :D
                 }
-                else{
+                else
+                {
                     throw new Error(bitacora, "Error de sintaxis: La variable (" + nombre + ") no ha sido declarada. Linea: " + linea + ", caracter: " + caracter);
-                }             
+                }
             }
 
-            if (getClasificacion() == clasificaciones.flujo_salida){
+            if (getClasificacion() == clasificaciones.flujo_salida)
+            {
                 ListaFlujoSalida();
             }
         }
 
         // If -> if (Condicion) { BloqueInstrucciones } (else BloqueInstrucciones)?
-        private void If(){
+        private void If()
+        {
             match("if");
             match("(");
             Condicion();
             match(")");
             BloqueInstrucciones();
 
-            if (getContenido() == "else"){
+            if (getContenido() == "else")
+            {
                 match("else");
                 BloqueInstrucciones();
             }
         }
 
         // Condicion -> Expresion operador_relacional Expresion
-        private void Condicion(){
+        private void Condicion()
+        {
             Expresion();
             match(clasificaciones.operador_relacional);
             Expresion();
@@ -301,77 +371,94 @@ namespace Sintaxis3{
 
         // x26 = (3+5)*8-(10-4)/2;
         // Expresion -> Termino MasTermino 
-        private void Expresion(){
+        private void Expresion()
+        {
             Termino();
             MasTermino();
         }
         // MasTermino -> (operador_termino Termino)?
-        private void MasTermino(){
-            if (getClasificacion() == clasificaciones.operador_termino){
-                string operador = getContenido();                              
+        private void MasTermino()
+        {
+            if (getClasificacion() == clasificaciones.operador_termino)
+            {
+                string operador = getContenido();
                 match(clasificaciones.operador_termino);
                 Termino();
-                float e1 = s.pop(bitacora, linea, caracter), e2 = s.pop(bitacora, linea, caracter);  
+                float e1 = s.pop(bitacora, linea, caracter), e2 = s.pop(bitacora, linea, caracter);
                 // Console.Write(operador + " ");
 
-                switch(operador){
+                switch (operador)
+                {
                     case "+":
-                        s.push(e2+e1, bitacora, linea, caracter);
+                        s.push(e2 + e1, bitacora, linea, caracter);
                         break;
                     case "-":
-                        s.push(e2-e1, bitacora, linea, caracter);
-                        break;                    
+                        s.push(e2 - e1, bitacora, linea, caracter);
+                        break;
                 }
                 s.Display(bitacora);
             }
         }
         // Termino -> Factor PorFactor
-        private void Termino(){
+        private void Termino()
+        {
             Factor();
             PorFactor();
         }
         // PorFactor -> (operador_factor Factor)?
-        private void PorFactor(){
-            if (getClasificacion() == clasificaciones.operador_factor){
-                string operador = getContenido();                
+        private void PorFactor()
+        {
+            if (getClasificacion() == clasificaciones.operador_factor)
+            {
+                string operador = getContenido();
                 match(clasificaciones.operador_factor);
                 Factor();
-                float e1 = s.pop(bitacora, linea, caracter), e2 = s.pop(bitacora, linea, caracter); 
+                float e1 = s.pop(bitacora, linea, caracter), e2 = s.pop(bitacora, linea, caracter);
                 // Console.Write(operador + " ");
 
-                switch(operador){
+                switch (operador)
+                {
                     case "*":
-                        s.push(e2*e1, bitacora, linea, caracter);                        
+                        s.push(e2 * e1, bitacora, linea, caracter);
                         break;
                     case "/":
-                        s.push(e2/e1, bitacora, linea, caracter);
-                        break;                    
+                        s.push(e2 / e1, bitacora, linea, caracter);
+                        break;
                 }
 
                 s.Display(bitacora);
             }
         }
         // Factor -> identificador | numero | ( Expresion )
-        private void Factor(){
-            if (getClasificacion() == clasificaciones.identificador){
+        private void Factor()
+        {
+            if (getClasificacion() == clasificaciones.identificador)
+            {
                 //Console.Write(getContenido() + " ");
 
                 string nombre = getContenido();
-                
-                if (!l.Existe(nombre)){
+
+                if (!l.Existe(nombre))
+                {
                     throw new Error(bitacora, "Error de sintaxis: La variable (" + nombre + ") no ha sido declarada. Linea: " + linea + ", caracter: " + caracter);
-                }else{
+                }
+                else
+                {
                     s.push(float.Parse(l.getValor(getContenido())), bitacora, linea, caracter);
                     s.Display(bitacora);
                     match(clasificaciones.identificador); // Validar existencia :D
                 }
 
-            }else if (getClasificacion() == clasificaciones.numero){
+            }
+            else if (getClasificacion() == clasificaciones.numero)
+            {
                 // Console.Write(getContenido() + " ");
                 s.push(float.Parse(getContenido()), bitacora, linea, caracter);
                 s.Display(bitacora);
                 match(clasificaciones.numero);
-            }else{
+            }
+            else
+            {
                 match("(");
                 Expresion();
                 match(")");
@@ -379,16 +466,20 @@ namespace Sintaxis3{
         }
 
         // For -> for (identificador = Expresion; Condicion; identificador incremento_termino) BloqueInstrucciones
-        private void For(){
+        private void For()
+        {
             match("for");
 
             match("(");
 
             string nombre = getContenido();
-                
-            if (!l.Existe(nombre)){
+
+            if (!l.Existe(nombre))
+            {
                 throw new Error(bitacora, "Error de sintaxis: La variable (" + nombre + ") no ha sido declarada. Linea: " + linea + ", caracter: " + caracter);
-            }else{
+            }
+            else
+            {
                 match(clasificaciones.identificador); // Validar existencia :D
             }
             match(clasificaciones.asignacion);
@@ -398,9 +489,12 @@ namespace Sintaxis3{
             Condicion();
             match(clasificaciones.fin_sentencia);
 
-            if (!l.Existe(nombre)){
+            if (!l.Existe(nombre))
+            {
                 throw new Error(bitacora, "Error de sintaxis: La variable (" + nombre + ") no ha sido declarada. Linea: " + linea + ", caracter: " + caracter);
-            }else{
+            }
+            else
+            {
                 match(clasificaciones.identificador); // Validar existencia :D
             }
             match(clasificaciones.incremento_termino);
@@ -411,7 +505,8 @@ namespace Sintaxis3{
         }
 
         // While -> while (Condicion) BloqueInstrucciones
-        private void While(){
+        private void While()
+        {
             match("while");
 
             match("(");
@@ -420,9 +515,10 @@ namespace Sintaxis3{
 
             BloqueInstrucciones();
         }
-        
+
         // DoWhile -> do BloqueInstrucciones while (Condicion);
-        private void DoWhile(){
+        private void DoWhile()
+        {
             match("do");
 
             BloqueInstrucciones();

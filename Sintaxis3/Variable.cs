@@ -2,7 +2,8 @@ namespace Sintaxis3
 {
     public class Variable
     {
-        public enum tipo{
+        public enum tipo
+        {
             CHAR, INT, FLOAT, STRING
         };
         string nombre;
@@ -10,30 +11,36 @@ namespace Sintaxis3
         tipo tipoDato;
         bool esConstante;
 
-        public Variable(string nombre, tipo tipoDato, bool esConstante){
+        public Variable(string nombre, tipo tipoDato, bool esConstante)
+        {
             this.nombre = nombre;
             this.tipoDato = tipoDato;
             valor = "";
             this.esConstante = esConstante;
         }
 
-        public bool getEsConstante(){
+        public bool getEsConstante()
+        {
             return esConstante;
         }
 
-        public string getNombre(){
+        public string getNombre()
+        {
             return nombre;
         }
 
-        public void setValor(string nuevoValor){
+        public void setValor(string nuevoValor)
+        {
             valor = nuevoValor;
         }
 
-        public string getValor(){
+        public string getValor()
+        {
             return valor;
         }
 
-        public tipo getTipoDato(){
+        public tipo getTipoDato()
+        {
             return tipoDato;
         }
     }

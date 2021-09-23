@@ -6,10 +6,12 @@ namespace Sintaxis3
     {
         static void Main(string[] args)
         {
-            try{
+            try
+            {
                 //ejecutar dispose cuando se destruye el objeto
                 //using (Lenguaje l = new Lenguaje("C:\\archivos\\suma.cpp")){
-                using (Lenguaje l = new Lenguaje("C:\\archivos\\suma.cpp")){          
+                using (Lenguaje l = new Lenguaje("C:\\archivos\\suma.cpp"))
+                {
                     //instanciamos nuestra clase
                     /*
                     while(!l.finArchivo()){
@@ -17,7 +19,9 @@ namespace Sintaxis3
                     }*/
                     l.Programa();
                 }
-            }catch(Exception e){
+            }
+            catch (Exception e)
+            {
                 Console.Write(e.Message);
             }
             Console.ReadKey();
