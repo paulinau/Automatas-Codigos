@@ -70,28 +70,28 @@ namespace Sintaxis3
             match("(");
             match(")");
 
-            BloqueInstrucciones();
+            BloqueInstrucciones(true);
         }
 
         // BloqueInstrucciones -> { Instrucciones }
-        private void BloqueInstrucciones()
+        private void BloqueInstrucciones(bool ejecuta)
         {
             match(clasificaciones.inicio_bloque);
 
-            Instrucciones();
+            Instrucciones(ejecuta);
 
             match(clasificaciones.fin_bloque);
         }
 
         // Lista_IDs -> identificador (= Expresion)? (,Lista_IDs)? 
-        private void Lista_IDs(Variable.tipo tipoDato)
+        private void Lista_IDs(Variable.tipo tipoDato, bool ejecuta)
         {
             string nombre = getContenido();
+            match(clasificaciones.identificador); // Validar duplicidad :D
 
             if (!l.Existe(nombre))
             {
                 l.Inserta(nombre, tipoDato);
-                match(clasificaciones.identificador); // Validar duplicidad :D
             }
             else
             {
@@ -105,25 +105,30 @@ namespace Sintaxis3
                 if (getClasificacion() == clasificaciones.cadena)
                 {
                     string valor = getContenido();
-                    l.setValor(nombre, valor);
                     match(clasificaciones.cadena);
+                    if(ejecuta){
+                        l.setValor(nombre, valor);
+                    }
                 }
                 else
                 {
                     Expresion();
-                    l.setValor(nombre, s.pop(bitacora, linea, caracter).ToString());
+                    if(ejecuta)
+                    {
+                        l.setValor(nombre, s.pop(bitacora, linea, caracter).ToString());
+                    }
                 }
             }
 
             if (getContenido() == ",")
             {
                 match(",");
-                Lista_IDs(tipoDato);
+                Lista_IDs(tipoDato, ejecuta);
             }
         }
 
         // Variables -> tipo_dato Lista_IDs; 
-        private void Variables()
+        private void Variables(bool ejecuta)
         {
             string tipo = getContenido();
             match(clasificaciones.tipo_dato);
@@ -147,28 +152,28 @@ namespace Sintaxis3
                     tipoDato = Variable.tipo.CHAR;
                     break;
             }
-            Lista_IDs(tipoDato);
+            Lista_IDs(tipoDato, ejecuta);
             match(clasificaciones.fin_sentencia);
         }
 
         // Instruccion -> (If | cin | cout | const | Variables | asignacion) ;
-        private void Instruccion()
+        private void Instruccion(bool ejecuta)
         {
             if (getContenido() == "do")
             {
-                DoWhile();
+                DoWhile(ejecuta);
             }
             else if (getContenido() == "while")
             {
-                While();
+                While(ejecuta);
             }
             else if (getContenido() == "for")
             {
-                For();
+                For(ejecuta);
             }
             else if (getContenido() == "if")
             {
-                If();
+                If(ejecuta);
             }
             else if (getContenido() == "cin")
             {
@@ -184,9 +189,13 @@ namespace Sintaxis3
                 }
                 else
                 {
-                    string valor = Console.ReadLine();
                     match(clasificaciones.identificador); // Validar existencia :D
-                    l.setValor(nombre, valor);
+
+                    if(ejecuta)
+                    {
+                        string valor = Console.ReadLine();
+                        l.setValor(nombre, valor);
+                    }   
                 }
 
                 match(clasificaciones.fin_sentencia);
@@ -194,16 +203,16 @@ namespace Sintaxis3
             else if (getContenido() == "cout")
             {
                 match("cout");
-                ListaFlujoSalida();
+                ListaFlujoSalida(ejecuta);
                 match(clasificaciones.fin_sentencia);
             }
             else if (getContenido() == "const")
             {
-                Constante();
+                Constante(ejecuta);
             }
             else if (getClasificacion() == clasificaciones.tipo_dato)
             {
-                Variables();
+                Variables(ejecuta);
             }
             else
             {
@@ -231,24 +240,27 @@ namespace Sintaxis3
                     Expresion();
                     valor = s.pop(bitacora, linea, caracter).ToString();
                 }
-                l.setValor(nombre, valor);
+                if(ejecuta)
+                {
+                    l.setValor(nombre, valor);
+                }
                 match(clasificaciones.fin_sentencia);
             }
         }
 
         // Instrucciones -> Instruccion Instrucciones?
-        private void Instrucciones()
+        private void Instrucciones(bool ejecuta)
         {
-            Instruccion();
+            Instruccion(ejecuta);
 
             if (getClasificacion() != clasificaciones.fin_bloque)
             {
-                Instrucciones();
+                Instrucciones(ejecuta);
             }
         }
 
         // Constante -> const tipo_dato identificador = numero | cadena;
-        private void Constante()
+        private void Constante(bool ejecuta)
         {
             match("const");
             string tipo = getContenido();
@@ -275,11 +287,12 @@ namespace Sintaxis3
             }
 
             string nombre = getContenido();
+            match(clasificaciones.identificador); // Validar duplicidad :D
 
-            if (!l.Existe(nombre))
+            if (!l.Existe(nombre) && ejecuta)
             {
                 l.Inserta(nombre, tipoDato, true);
-                match(clasificaciones.identificador); // Validar duplicidad :D
+                
             }
             else
             {
@@ -297,18 +310,25 @@ namespace Sintaxis3
             {
                 match(clasificaciones.cadena);
             }
-            l.setValor(nombre, valor);
+            if(ejecuta){
+                l.setValor(nombre, valor);
+            }
+            
             match(clasificaciones.fin_sentencia);
         }
 
         // ListaFlujoSalida -> << cadena | identificador | numero (ListaFlujoSalida)?
-        private void ListaFlujoSalida()
+        private void ListaFlujoSalida(bool ejecuta)
         {
             match(clasificaciones.flujo_salida);
 
             if (getClasificacion() == clasificaciones.numero)
             {
-                Console.Write(getContenido());
+                if(ejecuta)
+                {
+                    Console.Write(getContenido());
+                }
+                
                 match(clasificaciones.numero);
             }
             else if (getClasificacion() == clasificaciones.cadena)
@@ -322,7 +342,10 @@ namespace Sintaxis3
                 if (contenido.Contains("\\t"))
                     contenido = contenido.Replace("\\t", "\t");
 
-                Console.Write(contenido);
+                if(ejecuta)
+                {
+                    Console.Write(contenido);
+                }
                 match(clasificaciones.cadena);
             }
             else
@@ -330,7 +353,10 @@ namespace Sintaxis3
                 string nombre = getContenido();
                 if (l.Existe(nombre))
                 {
-                    Console.Write(l.getValor(nombre));
+                    if(ejecuta)
+                    {
+                        Console.Write(l.getValor(nombre));
+                    }
                     match(clasificaciones.identificador); // Validar existencia :D
                 }
                 else
@@ -341,32 +367,50 @@ namespace Sintaxis3
 
             if (getClasificacion() == clasificaciones.flujo_salida)
             {
-                ListaFlujoSalida();
+                ListaFlujoSalida(ejecuta);
             }
         }
 
         // If -> if (Condicion) { BloqueInstrucciones } (else BloqueInstrucciones)?
-        private void If()
+        private void If(bool ejecuta2)
         {
             match("if");
             match("(");
-            Condicion();
+            bool ejecuta = Condicion();
             match(")");
-            BloqueInstrucciones();
+            BloqueInstrucciones(ejecuta && ejecuta2);
 
             if (getContenido() == "else")
             {
                 match("else");
-                BloqueInstrucciones();
+                BloqueInstrucciones(!(ejecuta && ejecuta2));
             }
         }
 
         // Condicion -> Expresion operador_relacional Expresion
-        private void Condicion()
+        private bool Condicion()
         {
             Expresion();
+            float n1 = s.pop(bitacora, linea, caracter);
+            string operador = getContenido();
             match(clasificaciones.operador_relacional);
             Expresion();
+            float n2 = s.pop(bitacora, linea, caracter);
+
+            switch(operador){
+                case ">":
+                    return n1 > n2;
+                case ">=":
+                    return n1 >= n2;
+                case "<":
+                    return n1 < n2;
+                case "<=":
+                    return n1 <= n2;
+                case "==":
+                    return n1 == n2;
+                default:
+                    return n1 != n2;    
+            }
         }
 
         // x26 = (3+5)*8-(10-4)/2;
@@ -466,7 +510,7 @@ namespace Sintaxis3
         }
 
         // For -> for (identificador = Expresion; Condicion; identificador incremento_termino) BloqueInstrucciones
-        private void For()
+        private void For(bool ejecuta)
         {
             match("for");
 
@@ -501,11 +545,11 @@ namespace Sintaxis3
 
             match(")");
 
-            BloqueInstrucciones();
+            BloqueInstrucciones(ejecuta);
         }
 
         // While -> while (Condicion) BloqueInstrucciones
-        private void While()
+        private void While(bool ejecuta)
         {
             match("while");
 
@@ -513,15 +557,15 @@ namespace Sintaxis3
             Condicion();
             match(")");
 
-            BloqueInstrucciones();
+            BloqueInstrucciones(ejecuta);
         }
 
         // DoWhile -> do BloqueInstrucciones while (Condicion);
-        private void DoWhile()
+        private void DoWhile(bool ejecuta)
         {
             match("do");
 
-            BloqueInstrucciones();
+            BloqueInstrucciones(ejecuta);
 
             match("while");
 
@@ -530,9 +574,5 @@ namespace Sintaxis3
             match(")");
             match(clasificaciones.fin_sentencia);
         }
-
-        // x26 = (3 + 5) * 8 - (10 - 4) / 2
-        // x26 = 3 + 5 * 8 - 10 - 4 / 2
-        // x26 = 3 5 + 8 * 10 4 - 2 / -
     }
 }
