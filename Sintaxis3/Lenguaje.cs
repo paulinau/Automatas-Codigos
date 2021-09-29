@@ -2,15 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-// ✎ Requerimiento 1: Implementar las secuencias de escape: \n, \t cuando se imprime una cadena y 
-//                  eliminar las dobles comillas.
-// ✎ Requerimiento 2: Levantar excepciones en la clase Stack.
-// ✎ Requerimiento 3: Agregar el tipo de dato en el Inserta de ListaVariables.
-//                  salvar el tipo de dato en variable y pasarlo por argumento el tipo de dato a listaID's
-// ✎ Requerimiento 4: Validar existencia o duplicidad de variables. Mensaje de error: 
-//                  "Error de sintaxis: La variable (x26) no ha sido declarada."
-//                  "Error de sintaxis: La variables (x26) está duplicada." 
-// ✎ Requerimiento 5: Modificar el valor de la variable o constante al momento de su declaración.
+// ✎ Requerimiento 1: Implementar el not en el if.
+//    Requerimiento 2: Validar la asignación de strings en instrucción.
+//    Requerimiento 3: Implementar la comparacion de tipos de datos en Lista_IDs
+
 
 namespace Sintaxis3
 {
@@ -105,13 +100,22 @@ namespace Sintaxis3
                 if (getClasificacion() == clasificaciones.cadena)
                 {
                     string valor = getContenido();
-                    match(clasificaciones.cadena);
-                    if(ejecuta){
-                        l.setValor(nombre, valor);
+                    if(tipoDato == Variable.tipo.STRING)
+                    {
+                        match(clasificaciones.cadena);
+                        if(ejecuta){
+                            l.setValor(nombre, valor);
+                        }
                     }
+                    else
+                    {
+                        throw new Error(bitacora, "Error semántico: No se puede asignar un STRING a un ("+tipoDato+") en la linea: " + linea + ", caracter: " + caracter);
+                    }
+                    
                 }
                 else
                 {
+                    // Requerimiento 3
                     Expresion();
                     if(ejecuta)
                     {
@@ -177,7 +181,7 @@ namespace Sintaxis3
             }
             else if (getContenido() == "cin")
             {
-                // Requerimiento 5
+                // Requerimiento 4
                 match("cin");
                 match(clasificaciones.flujo_entrada);
 
@@ -229,7 +233,8 @@ namespace Sintaxis3
                 match(clasificaciones.asignacion);
 
                 string valor;
-
+                
+                // Requerimiento 2
                 if (getClasificacion() == clasificaciones.cadena)
                 {
                     valor = getContenido();
@@ -237,8 +242,13 @@ namespace Sintaxis3
                 }
                 else
                 {
+                    //Requerimiento 3
                     Expresion();
                     valor = s.pop(bitacora, linea, caracter).ToString();
+                    if(tipoDatoExpresion(float.Parse(valor)) > l.getTipoDato(nombre))
+                    {
+                        throw new Error(bitacora, "Error semántico: No se puede asignar un " + tipoDatoExpresion(float.Parse(valor)) + " a un ("+l.getTipoDato(nombre)+") Linea: " + linea + ", caracter: " + caracter);
+                    }
                 }
                 if(ejecuta)
                 {
@@ -377,13 +387,15 @@ namespace Sintaxis3
             match("if");
             match("(");
             bool ejecuta = Condicion();
+            
             match(")");
             BloqueInstrucciones(ejecuta && ejecuta2);
+            
 
             if (getContenido() == "else")
             {
                 match("else");
-                BloqueInstrucciones(!(ejecuta && ejecuta2));
+                BloqueInstrucciones(!ejecuta && ejecuta2);
             }
         }
 
@@ -573,6 +585,23 @@ namespace Sintaxis3
             Condicion();
             match(")");
             match(clasificaciones.fin_sentencia);
+        }
+
+        private Variable.tipo tipoDatoExpresion(float valor)
+        {
+            if(valor % 1 != 0)
+            {
+                return Variable.tipo.FLOAT;
+            }
+            else if (valor < 256)
+            {
+                return Variable.tipo.CHAR;
+            }
+            else if (valor < 65535)
+            {
+                return Variable.tipo.INT;
+            }
+            return Variable.tipo.FLOAT;
         }
     }
 }
