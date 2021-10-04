@@ -538,8 +538,37 @@ namespace Sintaxis3
             else
             {
                 match("(");
+                bool huboCast = false;
+
+                Variable.tipo tipoDato = Variable.tipo.CHAR;
+                if(getClasificacion() == clasificaciones.tipo_dato)
+                {
+                    huboCast = true;
+                    tipoDato = determinarTipoDato(getContenido());
+                    match(clasificaciones.tipo_dato);
+                    match(")");
+                    match("(");
+                }
+                
                 Expresion();
                 match(")");
+                if(huboCast)
+                {
+                    // si hubo un cast hacer un pop y convertir ese numero a tipo dato y meterlo al stack
+                    float n1 = s.pop(bitacora, linea, caracter);
+                    // para convertir un entero a char necesitamos dividir entre 256 y el residuo 
+                    // es el resultado del cast. 256 = 0, 257 = 1, 258 = 2, ... 
+                    // para convertir un flot a int necesitamos dividir entre 65536 y el residuo 
+                    // es el resultado del cast. 
+                    // para convertir un float a otro tipo de dato redondear el numero para eliminar
+                    // la parte fraccional.
+                    // para convertir un flot a chat necesitamos dividir 65536/256 y el residuo 
+                    // es el resultado del cast.
+                    // para convertir a flotante n1 = n1
+                    //n1 = cast(n1, tipoDato);
+                    s.push(n1, bitacora, linea, caracter);
+                    maxBytes = tipoDato;
+                }
             }
         }
 
@@ -607,6 +636,32 @@ namespace Sintaxis3
             Condicion();
             match(")");
             match(clasificaciones.fin_sentencia);
+        }
+
+        private Variable.tipo determinarTipoDato(string tipoDato)
+        {
+            Variable.tipo tipoVar;
+
+            switch(tipoDato)
+            {
+                case "int":
+                    tipoVar = Variable.tipo.INT;
+                    break;
+                
+                case "float":
+                    tipoVar = Variable.tipo.FLOAT;
+                    break;
+
+                case "string":
+                    tipoVar = Variable.tipo.STRING;
+                    break;
+
+                default:
+                    tipoVar = Variable.tipo.CHAR;  
+                    break;                  
+            }
+
+            return tipoVar;
         }
 
         private Variable.tipo tipoDatoExpresion(float valor)
