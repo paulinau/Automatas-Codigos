@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-// ✎ Requerimiento 1: Implementar el not en el if.
-//    Requerimiento 2: Validar la asignación de strings en instrucción.
-//    Requerimiento 3: Implementar la comparacion de tipos de datos en Lista_IDs
-//    Requerimiento 4: Validar los tipos de datos en la asignacion del cin
+// *✎ Requerimiento 1: Implementar el not en el if.
+// ✎ Requerimiento 2: Validar la asignación de strings en instrucción.
+// ✎ Requerimiento 3: Implementar la comparacion de tipos de datos en Lista_IDs
+//  *  Requerimiento 4: Validar los tipos de datos en la asignacion del cin
 //    Requerimiento 5: Implementar el cast
 
 namespace Sintaxis3
@@ -84,7 +84,7 @@ namespace Sintaxis3
         private void Lista_IDs(Variable.tipo tipoDato, bool ejecuta)
         {
             string nombre = getContenido();
-            match(clasificaciones.identificador); // Validar duplicidad :D
+            match(clasificaciones.identificador); 
 
             if (!l.Existe(nombre))
             {
@@ -98,14 +98,18 @@ namespace Sintaxis3
             if (getClasificacion() == clasificaciones.asignacion)
             {
                 match(clasificaciones.asignacion);
+                string valor;
 
                 if (getClasificacion() == clasificaciones.cadena)
                 {
-                    string valor = getContenido();
+                    //Requerimiento 2 :D
+                    valor = getContenido();
+                    //Console.WriteLine(tipoDato);
                     if(tipoDato == Variable.tipo.STRING)
                     {
                         match(clasificaciones.cadena);
-                        if(ejecuta){
+                        if(ejecuta)
+                        {
                             l.setValor(nombre, valor);
                         }
                     }
@@ -113,17 +117,27 @@ namespace Sintaxis3
                     {
                         throw new Error(bitacora, "Error semántico: No se puede asignar un STRING a un ("+tipoDato+") en la linea: " + linea + ", caracter: " + caracter);
                     }
-                    
                 }
                 else
                 {
-                    // Requerimiento 3
+                    // Requerimiento 3 :D
                     maxBytes = Variable.tipo.CHAR;
                     Expresion();
-                    if(ejecuta)
+                    valor = s.pop(bitacora, linea, caracter).ToString();
+
+                    if(tipoDatoExpresion(float.Parse(valor)) > maxBytes)
                     {
-                        l.setValor(nombre, s.pop(bitacora, linea, caracter).ToString());
+                        maxBytes = tipoDatoExpresion(float.Parse(valor));
                     }
+
+                    if(maxBytes > l.getTipoDato(nombre))
+                    {
+                        throw new Error(bitacora, "Error semántico: No se puede asignar un " + maxBytes + " a un ("+l.getTipoDato(nombre)+") Linea: " + linea + ", caracter: " + caracter);
+                    }
+                }
+                if(ejecuta)
+                {
+                    l.setValor(nombre, valor);
                 }
             }
 
@@ -140,26 +154,7 @@ namespace Sintaxis3
             string tipo = getContenido();
             match(clasificaciones.tipo_dato);
 
-            Variable.tipo tipoDato;
-            switch (tipo)
-            {
-                case "int":
-                    tipoDato = Variable.tipo.INT;
-                    break;
-                case "float":
-                    tipoDato = Variable.tipo.FLOAT;
-                    break;
-                case "string":
-                    tipoDato = Variable.tipo.STRING;
-                    break;
-                case "char":
-                    tipoDato = Variable.tipo.CHAR;
-                    break;
-                default:
-                    tipoDato = Variable.tipo.CHAR;
-                    break;
-            }
-            Lista_IDs(tipoDato, ejecuta);
+            Lista_IDs(determinarTipoDato(tipo), ejecuta);
             match(clasificaciones.fin_sentencia);
         }
 
@@ -231,21 +226,34 @@ namespace Sintaxis3
                 }
                 else
                 {
-                    match(clasificaciones.identificador); // Validar existencia :D
+                    match(clasificaciones.identificador);
                 }
                 match(clasificaciones.asignacion);
 
                 string valor;
                 
-                // Requerimiento 2
+                // Requerimiento 2 :D
                 if (getClasificacion() == clasificaciones.cadena)
                 {
                     valor = getContenido();
-                    match(clasificaciones.cadena);
+                    Variable.tipo tipoDato = l.getTipoDato(nombre);
+
+                    if(tipoDato == Variable.tipo.STRING)
+                    {
+                        match(clasificaciones.cadena);
+                        if(ejecuta)
+                        {
+                            l.setValor(nombre, valor);
+                        }
+                    }
+                    else
+                    {
+                        throw new Error(bitacora, "Error semántico: No se puede asignar un STRING a un ("+tipoDato+") en la linea: " + linea + ", caracter: " + caracter);
+                    }
                 }
                 else
                 {
-                    //Requerimiento 3
+                    //Requerimiento 3 :D
                     maxBytes = Variable.tipo.CHAR;
                     Expresion();
                     valor = s.pop(bitacora, linea, caracter).ToString();
@@ -286,33 +294,12 @@ namespace Sintaxis3
             string tipo = getContenido();
             match(clasificaciones.tipo_dato);
 
-            Variable.tipo tipoDato;
-            switch (tipo)
-            {
-                case "int":
-                    tipoDato = Variable.tipo.INT;
-                    break;
-                case "float":
-                    tipoDato = Variable.tipo.FLOAT;
-                    break;
-                case "string":
-                    tipoDato = Variable.tipo.STRING;
-                    break;
-                case "char":
-                    tipoDato = Variable.tipo.CHAR;
-                    break;
-                default:
-                    tipoDato = Variable.tipo.CHAR;
-                    break;
-            }
-
             string nombre = getContenido();
-            match(clasificaciones.identificador); // Validar duplicidad :D
+            match(clasificaciones.identificador);
 
             if (!l.Existe(nombre) && ejecuta)
             {
-                l.Inserta(nombre, tipoDato, true);
-                
+                l.Inserta(nombre, determinarTipoDato(tipo), true);  
             }
             else
             {
@@ -396,12 +383,23 @@ namespace Sintaxis3
         {
             match("if");
             match("(");
-            bool ejecuta = Condicion();
-            
+            bool ejecuta;
+
+            if(getContenido() == "!")
+            {
+                match(clasificaciones.operador_logico);
+                match("(");
+                ejecuta = !Condicion();
+                match(")");
+            }
+            else
+            {
+                ejecuta = Condicion();
+            }
+
             match(")");
             BloqueInstrucciones(ejecuta && ejecuta2);
             
-
             if (getContenido() == "else")
             {
                 match("else");
