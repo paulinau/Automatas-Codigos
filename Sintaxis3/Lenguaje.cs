@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-// *✎ Requerimiento 1: Implementar el not en el if.
+// ✎ Requerimiento 1: Implementar el not en el if.
 // ✎ Requerimiento 2: Validar la asignación de strings en instrucción.
 // ✎ Requerimiento 3: Implementar la comparacion de tipos de datos en Lista_IDs
 // *  Requerimiento 4: Validar los tipos de datos en la asignacion del cin
@@ -191,44 +191,19 @@ namespace Sintaxis3
                 }
                 else
                 {
-                    match(clasificaciones.identificador);
-                    string valor;
-                    if (getClasificacion() == clasificaciones.cadena)
+                    if(ejecuta)
                     {
-                        valor = Console.ReadLine();
-                        Variable.tipo tipoDato = l.getTipoDato(nombre);
-
-                        if (tipoDato == Variable.tipo.STRING)
-                        {
-                            match(clasificaciones.cadena);
-                            if (ejecuta)
-                            {
-                                l.setValor(nombre, valor);
-                            }
-                        }
-                        else
-                        {
-                            throw new Error(bitacora, "Error semántico: No se puede asignar un STRING a un (" + tipoDato + ") en la linea: " + linea + ", caracter: " + caracter);
-                        }
-                    }
-                    else
-                    {
+                        match(clasificaciones.identificador);
+                        string valor = Console.ReadLine();
                         maxBytes = Variable.tipo.CHAR;
-                        //Expresion();
-                        valor = Console.ReadLine();
-
-                        if (tipoDatoExpresion(float.Parse(valor)) > maxBytes)
+                        if(tipoDatoExpresion(float.Parse(valor))> maxBytes)
                         {
                             maxBytes = tipoDatoExpresion(float.Parse(valor));
                         }
-
-                        if (maxBytes > l.getTipoDato(nombre))
+                        if(maxBytes > l.getTipoDato(nombre))
                         {
                             throw new Error(bitacora, "Error semántico: No se puede asignar un " + maxBytes + " a un (" + l.getTipoDato(nombre) + ") Linea: " + linea + ", caracter: " + caracter);
                         }
-                    }
-                    if (ejecuta)
-                    {
                         l.setValor(nombre, valor);
                     }
                     match(clasificaciones.fin_sentencia);
@@ -590,9 +565,8 @@ namespace Sintaxis3
                     float n1 = s.pop(bitacora, linea, caracter);
                     n1 = cast(n1, tipoDato);
                     s.push(n1, bitacora, linea, caracter);
+                    maxBytes = tipoDatoExpresion(n1);
                     // Para convertir a flotante n1 = n1
-                    
-                    maxBytes = tipoDato;
                 }
             }
         }
@@ -720,7 +694,7 @@ namespace Sintaxis3
                     if(tipoDatoExpresion(n1) == Variable.tipo.FLOAT)
                     {
                         // Para convertir un float a otro tipo de dato redondear el numero para eliminar
-                        // la parte fraccional. OJO AQUI
+                        // la parte fraccional.
                         n1 = (int) Math.Round(n1);
                         // Para convertir un float a char necesitamos dividir entre 65536/256 y el residuo 
                         // es el resultado del cast.
@@ -737,7 +711,7 @@ namespace Sintaxis3
                         // es el resultado del cast.
                         n1 = n1 % 65536;
                     }
-                    break;   
+                    break;
             }
             return n1;
         }
