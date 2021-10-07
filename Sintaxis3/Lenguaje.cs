@@ -74,9 +74,7 @@ namespace Sintaxis3
         private void BloqueInstrucciones(bool ejecuta)
         {
             match(clasificaciones.inicio_bloque);
-
             Instrucciones(ejecuta);
-
             match(clasificaciones.fin_bloque);
         }
 
@@ -84,33 +82,30 @@ namespace Sintaxis3
         private void Lista_IDs(Variable.tipo tipoDato, bool ejecuta)
         {
             string nombre = getContenido();
-            match(clasificaciones.identificador);
-
+            
             if (!l.Existe(nombre))
             {
-                l.Inserta(nombre, tipoDato);
+                match(clasificaciones.identificador);
             }
             else
             {
                 throw new Error(bitacora, "Error de sintaxis: La variable (" + nombre + ") esta duplicada en la linea: " + linea + ", caracter: " + caracter);
             }
+            l.Inserta(nombre, tipoDato);
 
             if (getClasificacion() == clasificaciones.asignacion)
             {
                 match(clasificaciones.asignacion);
-                string valor;
 
                 if (getClasificacion() == clasificaciones.cadena)
                 {
                     //Requerimiento 2 :D
-                    valor = getContenido();
-                    //Console.WriteLine(tipoDato);
                     if (tipoDato == Variable.tipo.STRING)
                     {
                         match(clasificaciones.cadena);
                         if (ejecuta)
                         {
-                            l.setValor(nombre, valor);
+                            l.setValor(nombre, getContenido());
                         }
                     }
                     else
@@ -121,9 +116,10 @@ namespace Sintaxis3
                 else
                 {
                     // Requerimiento 3 :D
-                    maxBytes = Variable.tipo.CHAR;
                     Expresion();
-                    valor = s.pop(bitacora, linea, caracter).ToString();
+                    maxBytes = Variable.tipo.CHAR;
+
+                    string valor = s.pop(bitacora, linea, caracter).ToString();
 
                     if (tipoDatoExpresion(float.Parse(valor)) > maxBytes)
                     {
@@ -134,10 +130,10 @@ namespace Sintaxis3
                     {
                         throw new Error(bitacora, "Error semántico: No se puede asignar un " + maxBytes + " a un (" + l.getTipoDato(nombre) + ") Linea: " + linea + ", caracter: " + caracter);
                     }
-                }
-                if (ejecuta)
-                {
-                    l.setValor(nombre, valor);
+                    if (ejecuta)
+                    {
+                        l.setValor(nombre, valor);
+                    }
                 }
             }
 
@@ -195,7 +191,7 @@ namespace Sintaxis3
                     {
                         match(clasificaciones.identificador);
                         string valor = Console.ReadLine();
-                        maxBytes = Variable.tipo.CHAR;
+
                         if(tipoDatoExpresion(float.Parse(valor))> maxBytes)
                         {
                             maxBytes = tipoDatoExpresion(float.Parse(valor));
@@ -206,8 +202,8 @@ namespace Sintaxis3
                         }
                         l.setValor(nombre, valor);
                     }
-                    match(clasificaciones.fin_sentencia);
                 }
+                match(clasificaciones.fin_sentencia);
             }
             else if (getContenido() == "cout")
             {
@@ -243,9 +239,8 @@ namespace Sintaxis3
                 if (getClasificacion() == clasificaciones.cadena)
                 {
                     valor = getContenido();
-                    Variable.tipo tipoDato = l.getTipoDato(nombre);
 
-                    if (tipoDato == Variable.tipo.STRING)
+                    if (l.getTipoDato(nombre) == Variable.tipo.STRING)
                     {
                         match(clasificaciones.cadena);
                         if (ejecuta)
@@ -255,7 +250,7 @@ namespace Sintaxis3
                     }
                     else
                     {
-                        throw new Error(bitacora, "Error semántico: No se puede asignar un STRING a un (" + tipoDato + ") en la linea: " + linea + ", caracter: " + caracter);
+                        throw new Error(bitacora, "Error semántico: No se puede asignar un STRING a un (" + l.getTipoDato(nombre) + ") en la linea: " + linea + ", caracter: " + caracter);
                     }
                 }
                 else
@@ -302,33 +297,36 @@ namespace Sintaxis3
             match(clasificaciones.tipo_dato);
 
             string nombre = getContenido();
-            match(clasificaciones.identificador);
 
             if (!l.Existe(nombre) && ejecuta)
             {
-                l.Inserta(nombre, determinarTipoDato(tipo), true);
+                match(clasificaciones.identificador);
             }
             else
             {
                 throw new Error(bitacora, "Error de sintaxis: La variable (" + nombre + ") esta duplicada en la linea: " + linea + ", caracter: " + caracter);
             }
+            l.Inserta(nombre, determinarTipoDato(tipo), true);
             match(clasificaciones.asignacion);
 
             string valor = getContenido();
 
             if (getClasificacion() == clasificaciones.numero)
             {
+                if (ejecuta)
+                {
+                    l.setValor(nombre, valor);
+                }
                 match(clasificaciones.numero);
             }
             else
             {
+                if (ejecuta)
+                {
+                    l.setValor(nombre, valor);
+                }
                 match(clasificaciones.cadena);
             }
-            if (ejecuta)
-            {
-                l.setValor(nombre, valor);
-            }
-
             match(clasificaciones.fin_sentencia);
         }
 
@@ -342,9 +340,8 @@ namespace Sintaxis3
                 if (ejecuta)
                 {
                     Console.Write(getContenido());
-                }
-
-                match(clasificaciones.numero);
+                    match(clasificaciones.numero);
+                } 
             }
             else if (getClasificacion() == clasificaciones.cadena)
             {
@@ -500,7 +497,6 @@ namespace Sintaxis3
                         s.push(e2 / e1, bitacora, linea, caracter);
                         break;
                 }
-
                 s.Display(bitacora);
             }
         }
@@ -510,7 +506,6 @@ namespace Sintaxis3
             if (getClasificacion() == clasificaciones.identificador)
             {
                 //Console.Write(getContenido() + " ");
-
                 string nombre = getContenido();
 
                 if (!l.Existe(nombre))
@@ -545,9 +540,9 @@ namespace Sintaxis3
             else
             {
                 match("(");
+                Variable.tipo tipoDato = Variable.tipo.CHAR;
                 bool huboCast = false;
 
-                Variable.tipo tipoDato = Variable.tipo.CHAR;
                 if (getClasificacion() == clasificaciones.tipo_dato)
                 {
                     huboCast = true;
@@ -682,27 +677,18 @@ namespace Sintaxis3
 
         private float cast(float n1, Variable.tipo tipoDato)
         {
-            switch(tipoDato)
+            switch(tipoDatoExpresion(n1))
             {
-                case Variable.tipo.CHAR:
-                    if(tipoDatoExpresion(n1) == Variable.tipo.INT)
+                case Variable.tipo.INT:
+                    if(tipoDato == Variable.tipo.CHAR)
                     {
                         // Para convertir un entero a char necesitamos dividir entre 256 y el residuo 
                         // es el resultado del cast. 256 = 0, 257 = 1, 258 = 2, ... 
                         n1 = n1 % 256;
                     }
-                    if(tipoDatoExpresion(n1) == Variable.tipo.FLOAT)
-                    {
-                        // Para convertir un float a otro tipo de dato redondear el numero para eliminar
-                        // la parte fraccional.
-                        n1 = (int) Math.Round(n1);
-                        // Para convertir un float a char necesitamos dividir entre 65536/256 y el residuo 
-                        // es el resultado del cast.
-                        n1 = n1%(65536/256);
-                    }
                     break;
-                case Variable.tipo.INT:
-                    if(tipoDatoExpresion(n1) == Variable.tipo.FLOAT)
+                case Variable.tipo.FLOAT:
+                    if(tipoDato == Variable.tipo.INT)
                     {
                         // Para convertir un float a otro tipo de dato redondear el numero para eliminar
                         // la parte fraccional.
@@ -710,6 +696,15 @@ namespace Sintaxis3
                         // Para convertir un flot a int necesitamos dividir entre 65536 y el residuo 
                         // es el resultado del cast.
                         n1 = n1 % 65536;
+                    }
+                    if(tipoDato == Variable.tipo.CHAR)
+                    {
+                        // Para convertir un float a otro tipo de dato redondear el numero para eliminar
+                        // la parte fraccional.
+                        n1 = (int) Math.Round(n1);
+                        // Para convertir un float a char necesitamos dividir entre 65536/256 y el residuo 
+                        // es el resultado del cast.
+                        n1 = n1%(65536/256);
                     }
                     break;
             }
