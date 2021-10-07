@@ -6,7 +6,7 @@ using System.Text;
 // ✎ Requerimiento 2: Validar la asignación de strings en instrucción.
 // ✎ Requerimiento 3: Implementar la comparacion de tipos de datos en Lista_IDs
 // *  Requerimiento 4: Validar los tipos de datos en la asignacion del cin
-//    Requerimiento 5: Implementar el cast
+// ✎ Requerimiento 5: Implementar el cast
 
 namespace Sintaxis3
 {
