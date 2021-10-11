@@ -6,7 +6,7 @@ using System.Text;
 // ✎ Requerimiento 2: Validar la asignación de strings en instrucción.
 // ✎ Requerimiento 3: Implementar la comparacion de tipos de datos en Lista_IDs
 // *  Requerimiento 4: Validar los tipos de datos en la asignacion del cin
-//    Requerimiento 5: Implementar el cast
+// ✎ Requerimiento 5: Implementar el cast
 
 namespace Sintaxis3
 {
@@ -82,7 +82,7 @@ namespace Sintaxis3
         private void Lista_IDs(Variable.tipo tipoDato, bool ejecuta)
         {
             string nombre = getContenido();
-            
+
             if (!l.Existe(nombre))
             {
                 match(clasificaciones.identificador);
@@ -187,16 +187,16 @@ namespace Sintaxis3
                 }
                 else
                 {
-                    if(ejecuta)
+                    if (ejecuta)
                     {
                         match(clasificaciones.identificador);
                         string valor = Console.ReadLine();
 
-                        if(tipoDatoExpresion(float.Parse(valor))> maxBytes)
+                        if (tipoDatoExpresion(float.Parse(valor)) > maxBytes)
                         {
                             maxBytes = tipoDatoExpresion(float.Parse(valor));
                         }
-                        if(maxBytes > l.getTipoDato(nombre))
+                        if (maxBytes > l.getTipoDato(nombre))
                         {
                             throw new Error(bitacora, "Error semántico: No se puede asignar un " + maxBytes + " a un (" + l.getTipoDato(nombre) + ") Linea: " + linea + ", caracter: " + caracter);
                         }
@@ -341,7 +341,7 @@ namespace Sintaxis3
                 {
                     Console.Write(getContenido());
                     match(clasificaciones.numero);
-                } 
+                }
             }
             else if (getClasificacion() == clasificaciones.cadena)
             {
@@ -677,31 +677,31 @@ namespace Sintaxis3
 
         private float cast(float n1, Variable.tipo tipoDato)
         {
-            switch(tipoDato)
+            switch (tipoDato)
             {
                 case Variable.tipo.CHAR:
-                    if(tipoDatoExpresion(n1) == Variable.tipo.INT)
+                    if (tipoDatoExpresion(n1) == Variable.tipo.INT)
                     {
                         // Para convertir un entero a char necesitamos dividir entre 256 y el residuo 
                         // es el resultado del cast. 256 = 0, 257 = 1, 258 = 2, ... 
                         n1 = n1 % 256;
                     }
-                    if(tipoDatoExpresion(n1) == Variable.tipo.FLOAT)
+                    if (tipoDatoExpresion(n1) == Variable.tipo.FLOAT)
                     {
                         // Para convertir un float a otro tipo de dato redondear el numero para eliminar
                         // la parte fraccional.
-                        n1 = (int) Math.Round(n1);
+                        n1 = (int)Math.Round(n1);
                         // Para convertir un float a char necesitamos dividir entre 65536/256 y el residuo 
                         // es el resultado del cast.
-                        n1 = n1%(65536/256);
+                        n1 = n1 % (65536 / 256);
                     }
                     break;
                 case Variable.tipo.INT:
-                    if(tipoDatoExpresion(n1) == Variable.tipo.FLOAT)
+                    if (tipoDatoExpresion(n1) == Variable.tipo.FLOAT)
                     {
                         // Para convertir un float a otro tipo de dato redondear el numero para eliminar
                         // la parte fraccional.
-                        n1 = (int) Math.Round(n1);
+                        n1 = (int)Math.Round(n1);
                         // Para convertir un flot a int necesitamos dividir entre 65536 y el residuo 
                         // es el resultado del cast.
                         n1 = n1 % 65536;
