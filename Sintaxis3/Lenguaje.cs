@@ -560,7 +560,8 @@ namespace Sintaxis3
                     float n1 = s.pop(bitacora, linea, caracter);
                     n1 = cast(n1, tipoDato);
                     s.push(n1, bitacora, linea, caracter);
-                    maxBytes = tipoDatoExpresion(n1);
+                    //maxBytes = tipoDatoExpresion(n1);
+                    maxBytes = tipoDato;
                     // Para convertir a flotante n1 = n1
                 }
             }
