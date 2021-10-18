@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Sintaxis3
+namespace Ensamblador
 {
     class Program
     {
@@ -28,3 +28,4 @@ namespace Sintaxis3
         }
     }
 }
+

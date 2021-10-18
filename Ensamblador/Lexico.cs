@@ -1,12 +1,13 @@
 using System;
 using System.IO;
 
-namespace Sintaxis3
+namespace Ensamblador
 {
     class Lexico : Token, IDisposable
     {
         protected StreamReader archivo;
         protected StreamWriter bitacora;
+        protected StreamWriter asm;
         protected int linea, caracter;
         const int F = -1;
         const int E = -2;
@@ -65,7 +66,10 @@ namespace Sintaxis3
             {
                 archivo = new StreamReader("C:\\archivos\\prueba.cpp");
                 bitacora = new StreamWriter("C:\\archivos\\prueba.log");
-                bitacora.AutoFlush = true; //recibe falso o verdadero
+                bitacora.AutoFlush = true;
+
+                asm = new StreamWriter("c:\\archivos\\prueba.asm");
+                asm.AutoFlush = true;
 
                 DateTime fechaActual = DateTime.Now;
 
@@ -98,14 +102,22 @@ namespace Sintaxis3
 
                     string log = Path.ChangeExtension(nombre, ".log");
                     bitacora = new StreamWriter(log);
-                    bitacora.AutoFlush = true; //recibe falso o verdadero
+                    bitacora.AutoFlush = true; 
 
+                    string ensambla = Path.ChangeExtension(nombre, ".asm");
+                    asm = new StreamWriter(ensambla);
+                    asm.AutoFlush = true;
+                
                     DateTime fechaActual = DateTime.Now;
                     string directorio = Path.GetDirectoryName(nombre);
 
                     bitacora.WriteLine("Archivo: " + nombre_archivo);  //grabamos algo en el archivo
                     bitacora.WriteLine("Directorio: " + directorio);
                     bitacora.WriteLine("Fecha: " + fechaActual.ToString("D") + " Hora: " + fechaActual.ToString("t"));
+
+                    asm.WriteLine("; Archivo: " + nombre_archivo);  //grabamos algo en el archivo
+                    asm.WriteLine("; Directorio: " + directorio);
+                    asm.WriteLine("; Fecha: " + fechaActual.ToString("D") + " Hora: " + fechaActual.ToString("t"));
                 }
                 else
                 {
@@ -131,6 +143,7 @@ namespace Sintaxis3
         {
             archivo.Close();
             bitacora.Close();
+            asm.Close();
         }
 
         protected void nextToken()

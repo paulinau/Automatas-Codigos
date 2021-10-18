@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using System;
 
-namespace Sintaxis3
+namespace Ensamblador
 {
     public class ListaVariables
     {
@@ -58,14 +58,18 @@ namespace Sintaxis3
             return Variable.tipo.CHAR;
         }
 
-        public void Imprime(StreamWriter bitacora)
+        public void Imprime(StreamWriter bitacora, StreamWriter asm)
         {
             bitacora.WriteLine("Lista de Variables: ");
             foreach (Variable x in lista)
             {
                 bitacora.WriteLine(x.getNombre() + " " + x.getValor() + " " + x.getTipoDato() + " " + (x.getEsConstante() ? "Constante" : "Variable"));
+                asm.Write(x.getNombre() + " ");
+                if(x.getTipoDato() == Variable.tipo.CHAR)
+                    asm.WriteLine("db ");
+                else
+                    asm.WriteLine("dw ");
             }
-
         }
     }
 }

@@ -30,3 +30,19 @@ D:\pauli\Documents\Automatas Codigos\Sintaxis3\obj\Debug\net5.0\Sintaxis3.dll
 D:\pauli\Documents\Automatas Codigos\Sintaxis3\obj\Debug\net5.0\ref\Sintaxis3.dll
 D:\pauli\Documents\Automatas Codigos\Sintaxis3\obj\Debug\net5.0\Sintaxis3.pdb
 D:\pauli\Documents\Automatas Codigos\Sintaxis3\obj\Debug\net5.0\Sintaxis3.genruntimeconfig.cache
+D:\pauli\Documents\Ensamblador\Ensamblador\bin\Debug\net5.0\Sintaxis3.exe
+D:\pauli\Documents\Ensamblador\Ensamblador\bin\Debug\net5.0\Sintaxis3.deps.json
+D:\pauli\Documents\Ensamblador\Ensamblador\bin\Debug\net5.0\Sintaxis3.runtimeconfig.json
+D:\pauli\Documents\Ensamblador\Ensamblador\bin\Debug\net5.0\Sintaxis3.runtimeconfig.dev.json
+D:\pauli\Documents\Ensamblador\Ensamblador\bin\Debug\net5.0\Sintaxis3.dll
+D:\pauli\Documents\Ensamblador\Ensamblador\bin\Debug\net5.0\ref\Sintaxis3.dll
+D:\pauli\Documents\Ensamblador\Ensamblador\bin\Debug\net5.0\Sintaxis3.pdb
+D:\pauli\Documents\Ensamblador\Ensamblador\obj\Debug\net5.0\Sintaxis3.csproj.AssemblyReference.cache
+D:\pauli\Documents\Ensamblador\Ensamblador\obj\Debug\net5.0\Sintaxis3.GeneratedMSBuildEditorConfig.editorconfig
+D:\pauli\Documents\Ensamblador\Ensamblador\obj\Debug\net5.0\Sintaxis3.AssemblyInfoInputs.cache
+D:\pauli\Documents\Ensamblador\Ensamblador\obj\Debug\net5.0\Sintaxis3.AssemblyInfo.cs
+D:\pauli\Documents\Ensamblador\Ensamblador\obj\Debug\net5.0\Sintaxis3.csproj.CoreCompileInputs.cache
+D:\pauli\Documents\Ensamblador\Ensamblador\obj\Debug\net5.0\Sintaxis3.dll
+D:\pauli\Documents\Ensamblador\Ensamblador\obj\Debug\net5.0\ref\Sintaxis3.dll
+D:\pauli\Documents\Ensamblador\Ensamblador\obj\Debug\net5.0\Sintaxis3.pdb
+D:\pauli\Documents\Ensamblador\Ensamblador\obj\Debug\net5.0\Sintaxis3.genruntimeconfig.cache

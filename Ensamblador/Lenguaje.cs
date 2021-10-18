@@ -8,7 +8,7 @@ using System.Text;
 // *  Requerimiento 4: Validar los tipos de datos en la asignacion del cin
 // ✎ Requerimiento 5: Implementar el cast
 
-namespace Sintaxis3
+namespace Ensamblador
 {
     class Lenguaje : Sintaxis
     {
@@ -32,9 +32,12 @@ namespace Sintaxis3
         // Programa -> Libreria Main
         public void Programa()
         {
+            asm.WriteLine("org 100h");
             Libreria();
             Main();
-            l.Imprime(bitacora);
+            asm.WriteLine("ret");
+            asm.WriteLine(";variables");
+            l.Imprime(bitacora, asm);
         }
 
         // Libreria -> (#include <identificador(.h)?> Libreria) ?
@@ -120,6 +123,7 @@ namespace Sintaxis3
                     maxBytes = Variable.tipo.CHAR;
 
                     string valor = s.pop(bitacora, linea, caracter).ToString();
+                    asm.WriteLine("pop");
 
                     if (tipoDatoExpresion(float.Parse(valor)) > maxBytes)
                     {
@@ -259,6 +263,7 @@ namespace Sintaxis3
                     maxBytes = Variable.tipo.CHAR;
                     Expresion();
                     valor = s.pop(bitacora, linea, caracter).ToString();
+                    asm.WriteLine("pop");
 
                     if (tipoDatoExpresion(float.Parse(valor)) > maxBytes)
                     {
@@ -418,11 +423,13 @@ namespace Sintaxis3
             maxBytes = Variable.tipo.CHAR;
             Expresion();
             float n1 = s.pop(bitacora, linea, caracter);
+            asm.WriteLine("pop");
             string operador = getContenido();
             match(clasificaciones.operador_relacional);
             maxBytes = Variable.tipo.CHAR;
             Expresion();
             float n2 = s.pop(bitacora, linea, caracter);
+            asm.WriteLine("pop");
 
             switch (operador)
             {
@@ -457,15 +464,19 @@ namespace Sintaxis3
                 match(clasificaciones.operador_termino);
                 Termino();
                 float e1 = s.pop(bitacora, linea, caracter), e2 = s.pop(bitacora, linea, caracter);
+                asm.WriteLine("pop");
+                asm.WriteLine("pop");
                 // Console.Write(operador + " ");
 
                 switch (operador)
                 {
                     case "+":
                         s.push(e2 + e1, bitacora, linea, caracter);
+                        asm.WriteLine("push");
                         break;
                     case "-":
                         s.push(e2 - e1, bitacora, linea, caracter);
+                        asm.WriteLine("push");
                         break;
                 }
                 s.Display(bitacora);
@@ -486,15 +497,19 @@ namespace Sintaxis3
                 match(clasificaciones.operador_factor);
                 Factor();
                 float e1 = s.pop(bitacora, linea, caracter), e2 = s.pop(bitacora, linea, caracter);
+                asm.WriteLine("pop");
+                asm.WriteLine("pop");
                 // Console.Write(operador + " ");
 
                 switch (operador)
                 {
                     case "*":
                         s.push(e2 * e1, bitacora, linea, caracter);
+                        asm.WriteLine("push");
                         break;
                     case "/":
                         s.push(e2 / e1, bitacora, linea, caracter);
+                        asm.WriteLine("push");
                         break;
                 }
                 s.Display(bitacora);
@@ -515,6 +530,7 @@ namespace Sintaxis3
                 else
                 {
                     s.push(float.Parse(l.getValor(getContenido())), bitacora, linea, caracter);
+                    asm.WriteLine("push");
                     s.Display(bitacora);
                     match(clasificaciones.identificador); // Validar existencia :D
 
@@ -529,6 +545,7 @@ namespace Sintaxis3
             {
                 // Console.Write(getContenido() + " ");
                 s.push(float.Parse(getContenido()), bitacora, linea, caracter);
+                asm.WriteLine("push");
                 s.Display(bitacora);
 
                 if (tipoDatoExpresion(float.Parse(getContenido())) > maxBytes)
@@ -558,8 +575,10 @@ namespace Sintaxis3
                 {
                     // si hubo un cast hacer un pop y convertir ese numero a tipo dato y meterlo al stack
                     float n1 = s.pop(bitacora, linea, caracter);
+                    asm.WriteLine("pop");
                     n1 = cast(n1, tipoDato);
                     s.push(n1, bitacora, linea, caracter);
+                    asm.WriteLine("push");
                     //maxBytes = tipoDatoExpresion(n1);
                     maxBytes = tipoDato;
                     // Para convertir a flotante n1 = n1

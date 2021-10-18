@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace Sintaxis3
+namespace Ensamblador
 {
     class Token : Error
     {

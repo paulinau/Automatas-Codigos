@@ -14,11 +14,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\pauli\\Documents\\Automatas Codigos\\Sintaxis3\\Sintaxis3.csproj",
+      "projectUniqueName": "D:\\pauli\\Documents\\Ensamblador\\Ensamblador\\Sintaxis3.csproj",
       "projectName": "Sintaxis3",
-      "projectPath": "D:\\pauli\\Documents\\Automatas Codigos\\Sintaxis3\\Sintaxis3.csproj",
+      "projectPath": "D:\\pauli\\Documents\\Ensamblador\\Ensamblador\\Sintaxis3.csproj",
       "packagesPath": "C:\\Users\\pauli\\.nuget\\packages\\",
-      "outputPath": "D:\\pauli\\Documents\\Automatas Codigos\\Sintaxis3\\obj\\",
+      "outputPath": "D:\\pauli\\Documents\\Ensamblador\\Ensamblador\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

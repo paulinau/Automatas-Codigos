@@ -1,4 +1,4 @@
-namespace Sintaxis3
+namespace Ensamblador
 {
     public class Variable
     {
