@@ -2,12 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-// ✎ Requerimiento 1: Implementar el not en el if.
-// ✎ Requerimiento 2: Validar la asignación de strings en instrucción.
-// ✎ Requerimiento 3: Implementar la comparacion de tipos de datos en Lista_IDs
-// *  Requerimiento 4: Validar los tipos de datos en la asignacion del cin
-// ✎ Requerimiento 5: Implementar el cast
-
+// ✎ 
+//  Requerimiento 1: Programar el residuo de la division en PorFactor
+//                   (para c++ y para ensamblador)
 namespace Ensamblador
 {
     class Lenguaje : Sintaxis
@@ -123,7 +120,7 @@ namespace Ensamblador
                     maxBytes = Variable.tipo.CHAR;
 
                     string valor = s.pop(bitacora, linea, caracter).ToString();
-                    asm.WriteLine("pop");
+                    asm.WriteLine("\tPOP CX");
 
                     if (tipoDatoExpresion(float.Parse(valor)) > maxBytes)
                     {
@@ -136,6 +133,7 @@ namespace Ensamblador
                     }
                     if (ejecuta)
                     {
+                        asm.WriteLine("\tMOV "+nombre+", CX");
                         l.setValor(nombre, valor);
                     }
                 }
@@ -263,7 +261,7 @@ namespace Ensamblador
                     maxBytes = Variable.tipo.CHAR;
                     Expresion();
                     valor = s.pop(bitacora, linea, caracter).ToString();
-                    asm.WriteLine("pop");
+                    asm.WriteLine("\tPOP CX");
 
                     if (tipoDatoExpresion(float.Parse(valor)) > maxBytes)
                     {
@@ -277,6 +275,7 @@ namespace Ensamblador
                 }
                 if (ejecuta)
                 {
+                    asm.WriteLine("\tMOV "+nombre+", CX");
                     l.setValor(nombre, valor);
                 }
                 match(clasificaciones.fin_sentencia);
@@ -423,13 +422,13 @@ namespace Ensamblador
             maxBytes = Variable.tipo.CHAR;
             Expresion();
             float n1 = s.pop(bitacora, linea, caracter);
-            asm.WriteLine("pop");
+            asm.WriteLine("\tPOP AX");
             string operador = getContenido();
             match(clasificaciones.operador_relacional);
             maxBytes = Variable.tipo.CHAR;
             Expresion();
             float n2 = s.pop(bitacora, linea, caracter);
-            asm.WriteLine("pop");
+            asm.WriteLine("\tPOP BX");
 
             switch (operador)
             {
@@ -464,19 +463,21 @@ namespace Ensamblador
                 match(clasificaciones.operador_termino);
                 Termino();
                 float e1 = s.pop(bitacora, linea, caracter), e2 = s.pop(bitacora, linea, caracter);
-                asm.WriteLine("pop");
-                asm.WriteLine("pop");
+                asm.WriteLine("\tPOP AX");
+                asm.WriteLine("\tPOP BX");
                 // Console.Write(operador + " ");
 
                 switch (operador)
                 {
                     case "+":
+                        asm.WriteLine("\tADD AX, BX");
                         s.push(e2 + e1, bitacora, linea, caracter);
-                        asm.WriteLine("push");
+                        asm.WriteLine("\tPUSH AX");
                         break;
                     case "-":
+                        asm.WriteLine("\tSUB AX, BX");
                         s.push(e2 - e1, bitacora, linea, caracter);
-                        asm.WriteLine("push");
+                        asm.WriteLine("\tPUSH AX");
                         break;
                 }
                 s.Display(bitacora);
@@ -497,19 +498,21 @@ namespace Ensamblador
                 match(clasificaciones.operador_factor);
                 Factor();
                 float e1 = s.pop(bitacora, linea, caracter), e2 = s.pop(bitacora, linea, caracter);
-                asm.WriteLine("pop");
-                asm.WriteLine("pop");
+                asm.WriteLine("\tPOP BX");
+                asm.WriteLine("\tPOP AX");
                 // Console.Write(operador + " ");
 
                 switch (operador)
                 {
                     case "*":
+                        asm.WriteLine("\tMUL BX");
                         s.push(e2 * e1, bitacora, linea, caracter);
-                        asm.WriteLine("push");
+                        asm.WriteLine("\tPUSH AX");
                         break;
                     case "/":
+                        asm.WriteLine("\tDIV BX");
                         s.push(e2 / e1, bitacora, linea, caracter);
-                        asm.WriteLine("push");
+                        asm.WriteLine("\tPUSH AX");
                         break;
                 }
                 s.Display(bitacora);
@@ -530,7 +533,8 @@ namespace Ensamblador
                 else
                 {
                     s.push(float.Parse(l.getValor(getContenido())), bitacora, linea, caracter);
-                    asm.WriteLine("push");
+                    asm.WriteLine("\tMOV AX, "+nombre);
+                    asm.WriteLine("\tPUSH AX");
                     s.Display(bitacora);
                     match(clasificaciones.identificador); // Validar existencia :D
 
@@ -545,7 +549,8 @@ namespace Ensamblador
             {
                 // Console.Write(getContenido() + " ");
                 s.push(float.Parse(getContenido()), bitacora, linea, caracter);
-                asm.WriteLine("push");
+                asm.WriteLine("\tMOV AX, "+getContenido());
+                asm.WriteLine("\tPUSH AX");
                 s.Display(bitacora);
 
                 if (tipoDatoExpresion(float.Parse(getContenido())) > maxBytes)
@@ -575,10 +580,11 @@ namespace Ensamblador
                 {
                     // si hubo un cast hacer un pop y convertir ese numero a tipo dato y meterlo al stack
                     float n1 = s.pop(bitacora, linea, caracter);
-                    asm.WriteLine("pop");
+                    asm.WriteLine("\tPOP BX");
                     n1 = cast(n1, tipoDato);
                     s.push(n1, bitacora, linea, caracter);
-                    asm.WriteLine("push");
+                    asm.WriteLine("\tMOV AX, "+n1);
+                    asm.WriteLine("\tPUSH AX");
                     //maxBytes = tipoDatoExpresion(n1);
                     maxBytes = tipoDato;
                     // Para convertir a flotante n1 = n1
