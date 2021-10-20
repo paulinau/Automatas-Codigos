@@ -66,9 +66,9 @@ namespace Ensamblador
                 bitacora.WriteLine(x.getNombre() + " " + x.getValor() + " " + x.getTipoDato() + " " + (x.getEsConstante() ? "Constante" : "Variable"));
                 asm.Write(x.getNombre() + " ");
                 if(x.getTipoDato() == Variable.tipo.CHAR)
-                    asm.WriteLine("db ");
+                    asm.WriteLine("db 0");
                 else
-                    asm.WriteLine("dw ");
+                    asm.WriteLine("dw 0");
             }
         }
     }

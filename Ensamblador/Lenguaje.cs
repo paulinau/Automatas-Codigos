@@ -5,6 +5,8 @@ using System.Text;
 // ✎ 
 //  Requerimiento 1: Programar el residuo de la division en PorFactor
 //                   (para c++ y para ensamblador)
+//  Requerimiento 2: Programar (en ensamblador) los operadores relacionales en Condicion 
+//  Requerimiento 3: Programar (en ensamblador) el else
 namespace Ensamblador
 {
     class Lenguaje : Sintaxis
@@ -12,10 +14,12 @@ namespace Ensamblador
         Stack s;
         ListaVariables l;
         Variable.tipo maxBytes;
+        int numero_if;
         public Lenguaje()
         {
             s = new Stack(5);
             l = new ListaVariables();
+            numero_if = 0;
             Console.WriteLine("Iniciando analisis gramatical.");
         }
 
@@ -23,6 +27,7 @@ namespace Ensamblador
         {
             s = new Stack(5);
             l = new ListaVariables();
+            numero_if = 0;
             Console.WriteLine("Iniciando analisis gramatical.");
         }
 
@@ -393,21 +398,23 @@ namespace Ensamblador
             match("if");
             match("(");
             bool ejecuta;
+            string etiqueta = "if"+numero_if++;
 
             if (getContenido() == "!")
             {
                 match(clasificaciones.operador_logico);
                 match("(");
-                ejecuta = !Condicion();
+                ejecuta = !Condicion(etiqueta);
                 match(")");
             }
             else
             {
-                ejecuta = Condicion();
+                ejecuta = Condicion(etiqueta);
             }
 
             match(")");
             BloqueInstrucciones(ejecuta && ejecuta2);
+            asm.WriteLine(etiqueta+":");
 
             if (getContenido() == "else")
             {
@@ -417,18 +424,20 @@ namespace Ensamblador
         }
 
         // Condicion -> Expresion operador_relacional Expresion
-        private bool Condicion()
+        private bool Condicion(string etiqueta)
         {
             maxBytes = Variable.tipo.CHAR;
             Expresion();
             float n1 = s.pop(bitacora, linea, caracter);
-            asm.WriteLine("\tPOP AX");
+            asm.WriteLine("\tPOP CX");
             string operador = getContenido();
             match(clasificaciones.operador_relacional);
             maxBytes = Variable.tipo.CHAR;
             Expresion();
             float n2 = s.pop(bitacora, linea, caracter);
             asm.WriteLine("\tPOP BX");
+
+            asm.WriteLine("\tCMP CX, BX");
 
             switch (operador)
             {
@@ -441,6 +450,7 @@ namespace Ensamblador
                 case "<=":
                     return n1 <= n2;
                 case "==":
+                    asm.WriteLine("\tJNE "+etiqueta);
                     return n1 == n2;
                 default:
                     return n1 != n2;
@@ -463,8 +473,8 @@ namespace Ensamblador
                 match(clasificaciones.operador_termino);
                 Termino();
                 float e1 = s.pop(bitacora, linea, caracter), e2 = s.pop(bitacora, linea, caracter);
-                asm.WriteLine("\tPOP AX");
                 asm.WriteLine("\tPOP BX");
+                asm.WriteLine("\tPOP AX");
                 // Console.Write(operador + " ");
 
                 switch (operador)
@@ -613,7 +623,7 @@ namespace Ensamblador
             Expresion();
             match(clasificaciones.fin_sentencia);
 
-            Condicion();
+            Condicion("");
             match(clasificaciones.fin_sentencia);
 
             if (!l.Existe(nombre))
@@ -637,7 +647,7 @@ namespace Ensamblador
             match("while");
 
             match("(");
-            Condicion();
+            Condicion("");
             match(")");
 
             BloqueInstrucciones(ejecuta);
@@ -653,7 +663,7 @@ namespace Ensamblador
             match("while");
 
             match("(");
-            Condicion();
+            Condicion("");
             match(")");
             match(clasificaciones.fin_sentencia);
         }
