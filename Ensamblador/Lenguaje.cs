@@ -8,6 +8,7 @@ using System.Text;
 //  Requerimiento 2: Programar (en ensamblador) el else. Sera necesario agregar etiquetas.
 //                   (asi como en el if, el contador sería prácticamente el mismo)
 //  Requerimiento 3: Agregar (en ensamblador) la negacion de la condicion
+//  Corregir saltos de linea
 namespace Ensamblador
 {
     class Lenguaje : Sintaxis
@@ -16,11 +17,12 @@ namespace Ensamblador
         ListaVariables l;
         Variable.tipo maxBytes;
         int numero_if;
+        int numero_for;
         public Lenguaje()
         {
             s = new Stack(5);
             l = new ListaVariables();
-            numero_if = 0;
+            numero_if = numero_for = 0;
             Console.WriteLine("Iniciando analisis gramatical.");
         }
 
@@ -28,7 +30,7 @@ namespace Ensamblador
         {
             s = new Stack(5);
             l = new ListaVariables();
-            numero_if = 0;
+            numero_if = numero_for = 0;
             Console.WriteLine("Iniciando analisis gramatical.");
         }
 
@@ -44,7 +46,7 @@ namespace Ensamblador
             asm.WriteLine("define_print_num");
             asm.WriteLine("define_print_num_uns");
             asm.WriteLine("define_scan_num");
-            asm.WriteLine(";variables");
+            asm.WriteLine("; variables");
             l.Imprime(bitacora, asm);
         }
 
@@ -110,7 +112,6 @@ namespace Ensamblador
 
                 if (getClasificacion() == clasificaciones.cadena)
                 {
-                    //Requerimiento 2 :D
                     if (tipoDato == Variable.tipo.STRING)
                     {
                         match(clasificaciones.cadena);
@@ -126,7 +127,6 @@ namespace Ensamblador
                 }
                 else
                 {
-                    // Requerimiento 3 :D
                     Expresion();
                     maxBytes = Variable.tipo.CHAR;
 
@@ -190,7 +190,6 @@ namespace Ensamblador
             }
             else if (getContenido() == "cin")
             {
-                // Requerimiento 4
                 match("cin");
                 match(clasificaciones.flujo_entrada);
 
@@ -202,10 +201,14 @@ namespace Ensamblador
                 }
                 else
                 {
+                    asm.WriteLine("\tcall scan_num");
+                    asm.WriteLine("\tMOV " + nombre + ", CX");
+                    asm.WriteLine("\tprintn \" \" ");
                     if (ejecuta)
                     {
                         match(clasificaciones.identificador);
                         string valor = Console.ReadLine();
+                        asm.WriteLine("\tprint \" \"");
 
                         if (tipoDatoExpresion(float.Parse(valor)) > maxBytes)
                         {
@@ -224,6 +227,7 @@ namespace Ensamblador
             {
                 match("cout");
                 ListaFlujoSalida(ejecuta);
+                
                 match(clasificaciones.fin_sentencia);
             }
             else if (getContenido() == "const")
@@ -250,7 +254,6 @@ namespace Ensamblador
 
                 string valor;
 
-                // Requerimiento 2 :D
                 if (getClasificacion() == clasificaciones.cadena)
                 {
                     valor = getContenido();
@@ -270,7 +273,6 @@ namespace Ensamblador
                 }
                 else
                 {
-                    //Requerimiento 3 :D
                     maxBytes = Variable.tipo.CHAR;
                     Expresion();
                     valor = s.pop(bitacora, linea, caracter).ToString();
@@ -477,7 +479,6 @@ namespace Ensamblador
             }
         }
 
-        // x26 = (3+5)*8-(10-4)/2;
         // Expresion -> Termino MasTermino 
         private void Expresion()
         {
@@ -615,21 +616,19 @@ namespace Ensamblador
                     s.push(n1, bitacora, linea, caracter);
                     asm.WriteLine("\tMOV AX, "+n1);
                     asm.WriteLine("\tPUSH AX");
-                    //maxBytes = tipoDatoExpresion(n1);
                     maxBytes = tipoDato;
-                    // Para convertir a flotante n1 = n1
                 }
             }
         }
 
         // For -> for (identificador = Expresion; Condicion; identificador incremento_termino) BloqueInstrucciones
-        private void For(bool ejecuta)
+        private void For(bool ejecuta2)
         {
             match("for");
-
             match("(");
 
             string nombre = getContenido();
+            bool ejecuta;
 
             if (!l.Existe(nombre))
             {
@@ -639,26 +638,46 @@ namespace Ensamblador
             {
                 match(clasificaciones.identificador); // Validar existencia :D
             }
+
             match(clasificaciones.asignacion);
             Expresion();
+
+            maxBytes = Variable.tipo.CHAR;
+            string valor = s.pop(bitacora, linea, caracter).ToString();
+            asm.WriteLine("\tPOP CX");
+
+            if (tipoDatoExpresion(float.Parse(valor)) > maxBytes)
+            {
+                maxBytes = tipoDatoExpresion(float.Parse(valor));
+            }
+
+            if (maxBytes > l.getTipoDato(nombre))
+            {
+                throw new Error(bitacora, "Error semántico: No se puede asignar un " + maxBytes + " a un (" + l.getTipoDato(nombre) + ") Linea: " + linea + ", caracter: " + caracter);
+            }
+
+            asm.WriteLine("\tMOV "+nombre+", CX");
+            l.setValor(nombre, valor);
             match(clasificaciones.fin_sentencia);
 
-            Condicion("");
+            string etiqueta = "for"+numero_for++;
+            ejecuta = Condicion(etiqueta);
             match(clasificaciones.fin_sentencia);
+
+            nombre = getContenido();
+            match(clasificaciones.identificador);
 
             if (!l.Existe(nombre))
             {
                 throw new Error(bitacora, "Error de sintaxis: La variable (" + nombre + ") no ha sido declarada. Linea: " + linea + ", caracter: " + caracter);
             }
-            else
-            {
-                match(clasificaciones.identificador); // Validar existencia :D
-            }
+            
             match(clasificaciones.incremento_termino);
 
             match(")");
 
-            BloqueInstrucciones(ejecuta);
+            BloqueInstrucciones(ejecuta && ejecuta2);
+            asm.WriteLine(etiqueta + ":");
         }
 
         // While -> while (Condicion) BloqueInstrucciones
