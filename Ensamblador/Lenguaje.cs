@@ -5,8 +5,9 @@ using System.Text;
 // ✎ 
 //  Requerimiento 1: Programar el residuo de la division en PorFactor
 //                   (para c++ y para ensamblador)
-//  Requerimiento 2: Programar (en ensamblador) los operadores relacionales en Condicion 
-//  Requerimiento 3: Programar (en ensamblador) el else
+//  Requerimiento 2: Programar (en ensamblador) el else. Sera necesario agregar etiquetas.
+//                   (asi como en el if, el contador sería prácticamente el mismo)
+//  Requerimiento 3: Agregar (en ensamblador) la negacion de la condicion
 namespace Ensamblador
 {
     class Lenguaje : Sintaxis
@@ -34,10 +35,15 @@ namespace Ensamblador
         // Programa -> Libreria Main
         public void Programa()
         {
+            asm.WriteLine("include \"emu8086.inc\"");
             asm.WriteLine("org 100h");
             Libreria();
             Main();
             asm.WriteLine("ret");
+            asm.WriteLine("define_print_string");
+            asm.WriteLine("define_print_num");
+            asm.WriteLine("define_print_num_uns");
+            asm.WriteLine("define_scan_num");
             asm.WriteLine(";variables");
             l.Imprime(bitacora, asm);
         }
@@ -136,9 +142,11 @@ namespace Ensamblador
                     {
                         throw new Error(bitacora, "Error semántico: No se puede asignar un " + maxBytes + " a un (" + l.getTipoDato(nombre) + ") Linea: " + linea + ", caracter: " + caracter);
                     }
+
+                    asm.WriteLine("\tMOV "+nombre+", CX");
+
                     if (ejecuta)
                     {
-                        asm.WriteLine("\tMOV "+nombre+", CX");
                         l.setValor(nombre, valor);
                     }
                 }
@@ -278,9 +286,10 @@ namespace Ensamblador
                         throw new Error(bitacora, "Error semántico: No se puede asignar un " + maxBytes + " a un (" + l.getTipoDato(nombre) + ") Linea: " + linea + ", caracter: " + caracter);
                     }
                 }
+                asm.WriteLine("\tMOV "+nombre+", CX");
+
                 if (ejecuta)
                 {
-                    asm.WriteLine("\tMOV "+nombre+", CX");
                     l.setValor(nombre, valor);
                 }
                 match(clasificaciones.fin_sentencia);
@@ -346,15 +355,18 @@ namespace Ensamblador
 
             if (getClasificacion() == clasificaciones.numero)
             {
+                asm.WriteLine("MOV AX, "+getContenido());
+                asm.WriteLine("call print_num");
                 if (ejecuta)
                 {
                     Console.Write(getContenido());
-                    match(clasificaciones.numero);
                 }
+                match(clasificaciones.numero);
             }
             else if (getClasificacion() == clasificaciones.cadena)
             {
                 string contenido = getContenido();
+                asm.WriteLine("\tprint "+contenido);
 
                 if (contenido.Contains("\""))
                     contenido = contenido.Replace("\"", "");
@@ -374,6 +386,9 @@ namespace Ensamblador
                 string nombre = getContenido();
                 if (l.Existe(nombre))
                 {
+                    asm.WriteLine("MOV AX, "+nombre);
+                    asm.WriteLine("call print_num");
+
                     if (ejecuta)
                     {
                         Console.Write(l.getValor(nombre));
@@ -442,17 +457,22 @@ namespace Ensamblador
             switch (operador)
             {
                 case ">":
+                    asm.WriteLine("\tJLE "+etiqueta);
                     return n1 > n2;
                 case ">=":
+                    asm.WriteLine("\tJL "+etiqueta);
                     return n1 >= n2;
                 case "<":
+                    asm.WriteLine("\tJGE "+etiqueta);
                     return n1 < n2;
                 case "<=":
+                    asm.WriteLine("\tJG "+etiqueta);
                     return n1 <= n2;
                 case "==":
                     asm.WriteLine("\tJNE "+etiqueta);
                     return n1 == n2;
                 default:
+                    asm.WriteLine("\tJE "+etiqueta);
                     return n1 != n2;
             }
         }
