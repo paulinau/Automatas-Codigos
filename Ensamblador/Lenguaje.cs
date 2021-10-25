@@ -8,7 +8,7 @@ using System.Text;
 //  Requerimiento 2: Programar (en ensamblador) el else. Sera necesario agregar etiquetas.
 //                   (asi como en el if, el contador sería prácticamente el mismo)
 //  Requerimiento 3: Agregar (en ensamblador) la negacion de la condicion
-//  Requerimiento 4: Declarar variables en el for (int i)
+//  ✎ Requerimiento 4: Declarar variables en el for (int i)
 //  Requerimiento 5: Actualizar la variable del for con += y -=
 namespace Ensamblador
 {
@@ -628,10 +628,32 @@ namespace Ensamblador
             match("for");
             match("(");
 
-            string nombre = getContenido();
+            string nombre;
             bool ejecuta;
-            match(clasificaciones.identificador); 
 
+            if(getClasificacion() == clasificaciones.tipo_dato)
+            {
+                string tipo = getContenido();
+                match(clasificaciones.tipo_dato);
+
+                nombre = getContenido();
+
+                if (!l.Existe(nombre))
+                {
+                   match(clasificaciones.identificador);
+                }
+                else
+                {
+                    throw new Error(bitacora, "Error de sintaxis: La variable (" + nombre + ") esta duplicada en la linea: " + linea + ", caracter: " + caracter);
+                }
+                l.Inserta(nombre, determinarTipoDato(tipo));
+            }
+            else
+            {
+                nombre = getContenido();
+                match(clasificaciones.identificador); 
+            }
+            
             if (!l.Existe(nombre))
             {
                 throw new Error(bitacora, "Error de sintaxis: La variable (" + nombre + ") no ha sido declarada. Linea: " + linea + ", caracter: " + caracter);
