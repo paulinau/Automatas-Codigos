@@ -203,12 +203,12 @@ namespace Ensamblador
                 {
                     asm.WriteLine("\tcall scan_num");
                     asm.WriteLine("\tMOV " + nombre + ", CX");
-                    asm.WriteLine("\tprintn \" \" ");
+                    asm.WriteLine("\tprintn \"\"");
                     if (ejecuta)
                     {
                         match(clasificaciones.identificador);
                         string valor = Console.ReadLine();
-                        asm.WriteLine("\tprint \" \"");
+                        asm.WriteLine("\tprintn \"\"");
 
                         if (tipoDatoExpresion(float.Parse(valor)) > maxBytes)
                         {
