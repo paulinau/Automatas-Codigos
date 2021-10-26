@@ -9,7 +9,7 @@ using System.Text;
 //                   (asi como en el if, el contador sería prácticamente el mismo)
 //  Requerimiento 3: Agregar (en ensamblador) la negacion de la condicion
 //  ✎ Requerimiento 4: Declarar variables en el for (int i)
-//  Requerimiento 5: Actualizar la variable del for con += y -=
+//  ✎ Requerimiento 5: Actualizar la variable del for con += y -=
 namespace Ensamblador
 {
     class Lenguaje : Sintaxis
@@ -715,6 +715,7 @@ namespace Ensamblador
 
                 l.setValor(nombre, (float.Parse(l.getValor(nombre)) + float.Parse(numero)).ToString());
                 //Requerimiento 5
+                asm.WriteLine("\tADD "+nombre+", "+numero);
             }
             else if(operador == "-=")
             {
@@ -722,6 +723,8 @@ namespace Ensamblador
                 match(clasificaciones.numero);
 
                 l.setValor(nombre, (float.Parse(l.getValor(nombre)) - float.Parse(numero)).ToString());
+                // Requerimiento 5
+                asm.WriteLine("\tSUB "+nombre+", "+numero);
             }
             match(")");
 
