@@ -5,7 +5,7 @@ using System.Text;
 // ✎ 
 //  Requerimiento 1: Programar el residuo de la division en PorFactor
 //                   (para c++ y para ensamblador) y hacer un salto de linea cuando se imprima un \n
-//  Requerimiento 2: Programar (en ensamblador) el else. Sera necesario agregar etiquetas.
+//  ✎ Requerimiento 2: Programar (en ensamblador) el else. Sera necesario agregar etiquetas.
 //                   (asi como en el if, el contador sería prácticamente el mismo)
 //  Requerimiento 3: Agregar (en ensamblador) la negacion de la condicion
 //  ✎ Requerimiento 4: Declarar variables en el for (int i)
@@ -19,6 +19,7 @@ namespace Ensamblador
         Variable.tipo maxBytes;
         int numero_if;
         int numero_for;
+        int numero_else;
         public Lenguaje()
         {
             s = new Stack(5);
@@ -417,6 +418,7 @@ namespace Ensamblador
             match("(");
             bool ejecuta;
             string etiqueta = "if"+numero_if++;
+            string etiqueta2 = "else"+numero_else++;
 
             if (getContenido() == "!")
             {
@@ -436,8 +438,11 @@ namespace Ensamblador
 
             if (getContenido() == "else")
             {
+                if(ejecuta)
+                    asm.WriteLine("\tJMP "+etiqueta2);
                 match("else");
                 BloqueInstrucciones(!ejecuta && ejecuta2);
+                asm.WriteLine(etiqueta2+":");
             }
         }
 
@@ -542,9 +547,19 @@ namespace Ensamblador
                         asm.WriteLine("\tPUSH AX");
                         break;
                     case "/":
-                        asm.WriteLine("\tDIV BX");
-                        s.push(e2 / e1, bitacora, linea, caracter);
-                        asm.WriteLine("\tPUSH AX");
+                        if(e2 % e1 == 0)    //si el residuo cero
+                        {
+                            asm.WriteLine("\tDIV BX");
+                            s.push(e2 / e1, bitacora, linea, caracter);
+                            asm.WriteLine("\tPUSH AX");
+                        }
+                        else
+                        {
+                            asm.WriteLine("\tDIV BX");
+                            s.push(e2 / e1, bitacora, linea, caracter);
+                            asm.WriteLine("\tPUSH AX");
+                            //asm.WriteLine("\tPUSH CX");
+                        }
                         break;
                 }
                 s.Display(bitacora);
