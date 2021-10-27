@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 // ✎ 
-//  Requerimiento 1: Programar el residuo de la division en PorFactor
+//  ✎ Requerimiento 1: Programar el residuo de la division en PorFactor
 //                   (para c++ y para ensamblador) y hacer un salto de linea cuando se imprima un \n
 //  ✎ Requerimiento 2: Programar (en ensamblador) el else. Sera necesario agregar etiquetas.
 //                   (asi como en el if, el contador sería prácticamente el mismo)
@@ -370,15 +370,19 @@ namespace Ensamblador
             else if (getClasificacion() == clasificaciones.cadena)
             {
                 string contenido = getContenido();
-                asm.WriteLine("\tprint "+contenido);
-
+                string contenido2 = "\tprint" + contenido;
+                
                 if (contenido.Contains("\""))
                     contenido = contenido.Replace("\"", "");
                 if (contenido.Contains("\\n"))
+                {
                     contenido = contenido.Replace("\\n", "\n");
+                    contenido2 = contenido2.Replace("\\n", "\"\n\t printn \"");
+                }
                 if (contenido.Contains("\\t"))
                     contenido = contenido.Replace("\\t", "\t");
 
+                asm.WriteLine(contenido2);
                 if (ejecuta)
                 {
                     Console.Write(contenido);
@@ -547,19 +551,14 @@ namespace Ensamblador
                         asm.WriteLine("\tPUSH AX");
                         break;
                     case "/":
-                        if(e2 % e1 == 0)    //si el residuo cero
-                        {
-                            asm.WriteLine("\tDIV BX");
-                            s.push(e2 / e1, bitacora, linea, caracter);
-                            asm.WriteLine("\tPUSH AX");
-                        }
-                        else
-                        {
-                            asm.WriteLine("\tDIV BX");
-                            s.push(e2 / e1, bitacora, linea, caracter);
-                            asm.WriteLine("\tPUSH AX");
-                            //asm.WriteLine("\tPUSH CX");
-                        }
+                        asm.WriteLine("\tDIV BX");
+                        s.push(e2 / e1, bitacora, linea, caracter);
+                        asm.WriteLine("\tPUSH AX");
+                        break;
+                    case "%":
+                        asm.WriteLine("\tDIV BX");
+                        s.push(e2 % e1, bitacora, linea, caracter);
+                        asm.WriteLine("\tPUSH DX");
                         break;
                 }
                 s.Display(bitacora);
@@ -667,11 +666,11 @@ namespace Ensamblador
             {
                 nombre = getContenido();
                 match(clasificaciones.identificador); 
-            }
-            
-            if (!l.Existe(nombre))
-            {
-                throw new Error(bitacora, "Error de sintaxis: La variable (" + nombre + ") no ha sido declarada. Linea: " + linea + ", caracter: " + caracter);
+
+                if (!l.Existe(nombre))
+                {
+                    throw new Error(bitacora, "Error de sintaxis: La variable (" + nombre + ") no ha sido declarada. Linea: " + linea + ", caracter: " + caracter);
+                }
             }
 
             match(clasificaciones.asignacion);
