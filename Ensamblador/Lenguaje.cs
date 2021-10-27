@@ -370,7 +370,7 @@ namespace Ensamblador
             else if (getClasificacion() == clasificaciones.cadena)
             {
                 string contenido = getContenido();
-                string contenido2 = "\tprint" + contenido;
+                string contenido2 = "\tprint " + contenido;
                 
                 if (contenido.Contains("\""))
                     contenido = contenido.Replace("\"", "");
@@ -428,7 +428,7 @@ namespace Ensamblador
             {
                 match(clasificaciones.operador_logico);
                 match("(");
-                ejecuta = !Condicion(etiqueta);
+                ejecuta = Condicion(etiqueta, true);
                 match(")");
             }
             else
@@ -451,7 +451,7 @@ namespace Ensamblador
         }
 
         // Condicion -> Expresion operador_relacional Expresion
-        private bool Condicion(string etiqueta)
+        private bool Condicion(string etiqueta, bool negacion = false)
         {
             maxBytes = Variable.tipo.CHAR;
             Expresion();
@@ -469,23 +469,71 @@ namespace Ensamblador
             switch (operador)
             {
                 case ">":
-                    asm.WriteLine("\tJLE "+etiqueta);
-                    return n1 > n2;
+                    if(negacion)
+                    {
+                        asm.WriteLine("\tJG "+etiqueta);
+                        return n1 <= n2;
+                    }
+                    else
+                    {
+                        asm.WriteLine("\tJLE "+etiqueta);
+                        return n1 > n2;
+                    }    
                 case ">=":
-                    asm.WriteLine("\tJL "+etiqueta);
-                    return n1 >= n2;
+                    if(negacion)
+                    {
+                        asm.WriteLine("\tJGE "+etiqueta);
+                        return n1 < n2;
+                    }
+                    else
+                    {
+                        asm.WriteLine("\tJL "+etiqueta);
+                        return n1 >= n2;
+                    }
                 case "<":
-                    asm.WriteLine("\tJGE "+etiqueta);
-                    return n1 < n2;
+                    if(negacion)
+                    {
+                        asm.WriteLine("\tJL "+etiqueta);
+                        return n1 >= n2;
+                    }
+                    else
+                    {
+                        asm.WriteLine("\tJGE "+etiqueta);
+                        return n1 < n2;
+                    }
                 case "<=":
-                    asm.WriteLine("\tJG "+etiqueta);
-                    return n1 <= n2;
+                    if(negacion)
+                    {
+                        asm.WriteLine("\tJLE "+etiqueta);
+                        return n1 > n2;
+                    }
+                    else
+                    {
+                        asm.WriteLine("\tJG "+etiqueta);
+                        return n1 <= n2;
+                    }
                 case "==":
-                    asm.WriteLine("\tJNE "+etiqueta);
-                    return n1 == n2;
+                    if(negacion)
+                    {
+                        asm.WriteLine("\tJE "+etiqueta);
+                        return n1 != n2;
+                    }
+                    else
+                    {
+                        asm.WriteLine("\tJNE "+etiqueta);
+                        return n1 == n2;
+                    }
                 default:
-                    asm.WriteLine("\tJE "+etiqueta);
-                    return n1 != n2;
+                    if(negacion)
+                    {
+                        asm.WriteLine("\tJNE "+etiqueta);
+                        return n1 == n2;
+                    }
+                    else
+                    {
+                        asm.WriteLine("\tJE "+etiqueta);
+                        return n1 != n2;
+                    }
             }
         }
 
@@ -694,11 +742,22 @@ namespace Ensamblador
             l.setValor(nombre, valor);
             match(clasificaciones.fin_sentencia);
 
-            string etiquetaFin = "endFor"+numero_for++;
+            string etiquetaFin = "endFor"+numero_for;
             string etiquetaInicio = "beginFor"+numero_for++;
 
             asm.WriteLine(etiquetaInicio + ":");
-            ejecuta = Condicion(etiquetaFin);
+            if (getContenido() == "!")
+            {
+                match(clasificaciones.operador_logico);
+                match("(");
+                ejecuta = Condicion(etiquetaFin, true);
+                match(")");
+            }
+            else
+            {
+                ejecuta = Condicion(etiquetaFin);
+            }
+            //ejecuta = Condicion(etiquetaFin);
             match(clasificaciones.fin_sentencia);
 
             nombre = getContenido();
