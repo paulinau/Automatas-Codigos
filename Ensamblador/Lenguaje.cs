@@ -7,7 +7,7 @@ using System.Text;
 //                   (para c++ y para ensamblador) y hacer un salto de linea cuando se imprima un \n
 //  ✎ Requerimiento 2: Programar (en ensamblador) el else. Sera necesario agregar etiquetas.
 //                   (asi como en el if, el contador sería prácticamente el mismo)
-//  Requerimiento 3: Agregar (en ensamblador) la negacion de la condicion
+//  ✎ Requerimiento 3: Agregar (en ensamblador) la negacion de la condicion
 //  ✎ Requerimiento 4: Declarar variables en el for (int i)
 //  ✎ Requerimiento 5: Actualizar la variable del for con += y -=
 namespace Ensamblador
@@ -422,7 +422,6 @@ namespace Ensamblador
             match("(");
             bool ejecuta;
             string etiqueta = "if"+numero_if++;
-            string etiqueta2 = "else"+numero_else++;
 
             if (getContenido() == "!")
             {
@@ -438,16 +437,19 @@ namespace Ensamblador
 
             match(")");
             BloqueInstrucciones(ejecuta && ejecuta2);
-            asm.WriteLine(etiqueta+":");
 
             if (getContenido() == "else")
             {
-                if(ejecuta)
-                    asm.WriteLine("\tJMP "+etiqueta2);
                 match("else");
+                string etiqueta2 = "else"+numero_else++;
+                asm.WriteLine("\tJMP "+etiqueta2);
+                asm.WriteLine(etiqueta+":");
+
                 BloqueInstrucciones(!ejecuta && ejecuta2);
                 asm.WriteLine(etiqueta2+":");
+                return;
             }
+            asm.WriteLine(etiqueta+":");
         }
 
         // Condicion -> Expresion operador_relacional Expresion
@@ -769,41 +771,40 @@ namespace Ensamblador
             }
             
             string operador = getContenido();
+            string ensamblador = "";
             match(clasificaciones.incremento_termino);
 
             if(operador == "++")
             {
                 l.setValor(nombre, (float.Parse(l.getValor(nombre)) + 1).ToString());
-                asm.WriteLine("\tINC "+nombre);
+                ensamblador = "\tINC "+nombre;
             }
             else if(operador == "--")
             {
                 l.setValor(nombre, (float.Parse(l.getValor(nombre)) - 1).ToString());
-                asm.WriteLine("\tDEC "+nombre);
+                ensamblador = "\tDEC "+nombre;
             }
             else if(operador == "+=")
             {
                 string numero = getContenido();
                 match(clasificaciones.numero);
-
                 l.setValor(nombre, (float.Parse(l.getValor(nombre)) + float.Parse(numero)).ToString());
-                //Requerimiento 5
-                asm.WriteLine("\tADD "+nombre+", "+numero);
+                ensamblador = "\tADD "+nombre+", "+numero;
             }
             else if(operador == "-=")
             {
                 string numero = getContenido();
                 match(clasificaciones.numero);
-
                 l.setValor(nombre, (float.Parse(l.getValor(nombre)) - float.Parse(numero)).ToString());
-                // Requerimiento 5
-                asm.WriteLine("\tSUB "+nombre+", "+numero);
+                ensamblador = "\tSUB "+nombre+", "+numero;
             }
             match(")");
 
             BloqueInstrucciones(ejecuta && ejecuta2);
+            asm.WriteLine(ensamblador);
             asm.WriteLine("\tJMP "+etiquetaInicio);
             asm.WriteLine(etiquetaFin + ":");
+            
         }
 
         // While -> while (Condicion) BloqueInstrucciones
