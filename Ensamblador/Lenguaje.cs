@@ -145,7 +145,7 @@ namespace Ensamblador
                         throw new Error(bitacora, "Error semántico: No se puede asignar un " + maxBytes + " a un (" + l.getTipoDato(nombre) + ") Linea: " + linea + ", caracter: " + caracter);
                     }
 
-                    asm.WriteLine("\tMOV "+nombre+", CX");
+                    asm.WriteLine("\tMOV " + nombre + ", CX");
 
                     if (ejecuta)
                     {
@@ -229,7 +229,7 @@ namespace Ensamblador
             {
                 match("cout");
                 ListaFlujoSalida(ejecuta);
-                
+
                 match(clasificaciones.fin_sentencia);
             }
             else if (getContenido() == "const")
@@ -290,7 +290,7 @@ namespace Ensamblador
                         throw new Error(bitacora, "Error semántico: No se puede asignar un " + maxBytes + " a un (" + l.getTipoDato(nombre) + ") Linea: " + linea + ", caracter: " + caracter);
                     }
                 }
-                asm.WriteLine("\tMOV "+nombre+", CX");
+                asm.WriteLine("\tMOV " + nombre + ", CX");
 
                 if (ejecuta)
                 {
@@ -359,7 +359,7 @@ namespace Ensamblador
 
             if (getClasificacion() == clasificaciones.numero)
             {
-                asm.WriteLine("MOV AX, "+getContenido());
+                asm.WriteLine("MOV AX, " + getContenido());
                 asm.WriteLine("call print_num");
                 if (ejecuta)
                 {
@@ -371,7 +371,7 @@ namespace Ensamblador
             {
                 string contenido = getContenido();
                 string contenido2 = "\tprint " + contenido;
-                
+
                 if (contenido.Contains("\""))
                     contenido = contenido.Replace("\"", "");
                 if (contenido.Contains("\\n"))
@@ -394,7 +394,7 @@ namespace Ensamblador
                 string nombre = getContenido();
                 if (l.Existe(nombre))
                 {
-                    asm.WriteLine("MOV AX, "+nombre);
+                    asm.WriteLine("MOV AX, " + nombre);
                     asm.WriteLine("call print_num");
 
                     if (ejecuta)
@@ -421,7 +421,7 @@ namespace Ensamblador
             match("if");
             match("(");
             bool ejecuta;
-            string etiqueta = "if"+numero_if++;
+            string etiqueta = "if" + numero_if++;
 
             if (getContenido() == "!")
             {
@@ -441,15 +441,15 @@ namespace Ensamblador
             if (getContenido() == "else")
             {
                 match("else");
-                string etiqueta2 = "else"+numero_else++;
-                asm.WriteLine("\tJMP "+etiqueta2);
-                asm.WriteLine(etiqueta+":");
+                string etiqueta2 = "else" + numero_else++;
+                asm.WriteLine("\tJMP " + etiqueta2);
+                asm.WriteLine(etiqueta + ":");
 
                 BloqueInstrucciones(!ejecuta && ejecuta2);
-                asm.WriteLine(etiqueta2+":");
+                asm.WriteLine(etiqueta2 + ":");
                 return;
             }
-            asm.WriteLine(etiqueta+":");
+            asm.WriteLine(etiqueta + ":");
         }
 
         // Condicion -> Expresion operador_relacional Expresion
@@ -471,69 +471,69 @@ namespace Ensamblador
             switch (operador)
             {
                 case ">":
-                    if(negacion)
+                    if (negacion)
                     {
-                        asm.WriteLine("\tJG "+etiqueta);
+                        asm.WriteLine("\tJG " + etiqueta);
                         return n1 <= n2;
                     }
                     else
                     {
-                        asm.WriteLine("\tJLE "+etiqueta);
+                        asm.WriteLine("\tJLE " + etiqueta);
                         return n1 > n2;
-                    }    
+                    }
                 case ">=":
-                    if(negacion)
+                    if (negacion)
                     {
-                        asm.WriteLine("\tJGE "+etiqueta);
+                        asm.WriteLine("\tJGE " + etiqueta);
                         return n1 < n2;
                     }
                     else
                     {
-                        asm.WriteLine("\tJL "+etiqueta);
+                        asm.WriteLine("\tJL " + etiqueta);
                         return n1 >= n2;
                     }
                 case "<":
-                    if(negacion)
+                    if (negacion)
                     {
-                        asm.WriteLine("\tJL "+etiqueta);
+                        asm.WriteLine("\tJL " + etiqueta);
                         return n1 >= n2;
                     }
                     else
                     {
-                        asm.WriteLine("\tJGE "+etiqueta);
+                        asm.WriteLine("\tJGE " + etiqueta);
                         return n1 < n2;
                     }
                 case "<=":
-                    if(negacion)
+                    if (negacion)
                     {
-                        asm.WriteLine("\tJLE "+etiqueta);
+                        asm.WriteLine("\tJLE " + etiqueta);
                         return n1 > n2;
                     }
                     else
                     {
-                        asm.WriteLine("\tJG "+etiqueta);
+                        asm.WriteLine("\tJG " + etiqueta);
                         return n1 <= n2;
                     }
                 case "==":
-                    if(negacion)
+                    if (negacion)
                     {
-                        asm.WriteLine("\tJE "+etiqueta);
+                        asm.WriteLine("\tJE " + etiqueta);
                         return n1 != n2;
                     }
                     else
                     {
-                        asm.WriteLine("\tJNE "+etiqueta);
+                        asm.WriteLine("\tJNE " + etiqueta);
                         return n1 == n2;
                     }
                 default:
-                    if(negacion)
+                    if (negacion)
                     {
-                        asm.WriteLine("\tJNE "+etiqueta);
+                        asm.WriteLine("\tJNE " + etiqueta);
                         return n1 == n2;
                     }
                     else
                     {
-                        asm.WriteLine("\tJE "+etiqueta);
+                        asm.WriteLine("\tJE " + etiqueta);
                         return n1 != n2;
                     }
             }
@@ -629,7 +629,7 @@ namespace Ensamblador
                 else
                 {
                     s.push(float.Parse(l.getValor(getContenido())), bitacora, linea, caracter);
-                    asm.WriteLine("\tMOV AX, "+nombre);
+                    asm.WriteLine("\tMOV AX, " + nombre);
                     asm.WriteLine("\tPUSH AX");
                     s.Display(bitacora);
                     match(clasificaciones.identificador); // Validar existencia :D
@@ -645,7 +645,7 @@ namespace Ensamblador
             {
                 // Console.Write(getContenido() + " ");
                 s.push(float.Parse(getContenido()), bitacora, linea, caracter);
-                asm.WriteLine("\tMOV AX, "+getContenido());
+                asm.WriteLine("\tMOV AX, " + getContenido());
                 asm.WriteLine("\tPUSH AX");
                 s.Display(bitacora);
 
@@ -679,7 +679,7 @@ namespace Ensamblador
                     asm.WriteLine("\tPOP BX");
                     n1 = cast(n1, tipoDato);
                     s.push(n1, bitacora, linea, caracter);
-                    asm.WriteLine("\tMOV AX, "+n1);
+                    asm.WriteLine("\tMOV AX, " + n1);
                     asm.WriteLine("\tPUSH AX");
                     maxBytes = tipoDato;
                 }
@@ -695,7 +695,7 @@ namespace Ensamblador
             string nombre;
             bool ejecuta;
 
-            if(getClasificacion() == clasificaciones.tipo_dato)
+            if (getClasificacion() == clasificaciones.tipo_dato)
             {
                 string tipo = getContenido();
                 match(clasificaciones.tipo_dato);
@@ -704,7 +704,7 @@ namespace Ensamblador
 
                 if (!l.Existe(nombre))
                 {
-                   match(clasificaciones.identificador);
+                    match(clasificaciones.identificador);
                 }
                 else
                 {
@@ -715,7 +715,7 @@ namespace Ensamblador
             else
             {
                 nombre = getContenido();
-                match(clasificaciones.identificador); 
+                match(clasificaciones.identificador);
 
                 if (!l.Existe(nombre))
                 {
@@ -740,12 +740,12 @@ namespace Ensamblador
                 throw new Error(bitacora, "Error semántico: No se puede asignar un " + maxBytes + " a un (" + l.getTipoDato(nombre) + ") Linea: " + linea + ", caracter: " + caracter);
             }
 
-            asm.WriteLine("\tMOV "+nombre+", CX");
+            asm.WriteLine("\tMOV " + nombre + ", CX");
             l.setValor(nombre, valor);
             match(clasificaciones.fin_sentencia);
 
-            string etiquetaFin = "endFor"+numero_for;
-            string etiquetaInicio = "beginFor"+numero_for++;
+            string etiquetaFin = "endFor" + numero_for;
+            string etiquetaInicio = "beginFor" + numero_for++;
 
             asm.WriteLine(etiquetaInicio + ":");
             if (getContenido() == "!")
@@ -769,42 +769,42 @@ namespace Ensamblador
             {
                 throw new Error(bitacora, "Error de sintaxis: La variable (" + nombre + ") no ha sido declarada. Linea: " + linea + ", caracter: " + caracter);
             }
-            
+
             string operador = getContenido();
             string ensamblador = "";
             match(clasificaciones.incremento_termino);
 
-            if(operador == "++")
+            if (operador == "++")
             {
                 l.setValor(nombre, (float.Parse(l.getValor(nombre)) + 1).ToString());
-                ensamblador = "\tINC "+nombre;
+                ensamblador = "\tINC " + nombre;
             }
-            else if(operador == "--")
+            else if (operador == "--")
             {
                 l.setValor(nombre, (float.Parse(l.getValor(nombre)) - 1).ToString());
-                ensamblador = "\tDEC "+nombre;
+                ensamblador = "\tDEC " + nombre;
             }
-            else if(operador == "+=")
+            else if (operador == "+=")
             {
                 string numero = getContenido();
                 match(clasificaciones.numero);
                 l.setValor(nombre, (float.Parse(l.getValor(nombre)) + float.Parse(numero)).ToString());
-                ensamblador = "\tADD "+nombre+", "+numero;
+                ensamblador = "\tADD " + nombre + ", " + numero;
             }
-            else if(operador == "-=")
+            else if (operador == "-=")
             {
                 string numero = getContenido();
                 match(clasificaciones.numero);
                 l.setValor(nombre, (float.Parse(l.getValor(nombre)) - float.Parse(numero)).ToString());
-                ensamblador = "\tSUB "+nombre+", "+numero;
+                ensamblador = "\tSUB " + nombre + ", " + numero;
             }
             match(")");
 
             BloqueInstrucciones(ejecuta && ejecuta2);
             asm.WriteLine(ensamblador);
-            asm.WriteLine("\tJMP "+etiquetaInicio);
+            asm.WriteLine("\tJMP " + etiquetaInicio);
             asm.WriteLine(etiquetaFin + ":");
-            
+
         }
 
         // While -> while (Condicion) BloqueInstrucciones
