@@ -772,16 +772,20 @@ namespace Ensamblador
 
             string operador = getContenido();
             string ensamblador = "";
+            //string ensamblador2 = "";
+            //string ensamblador3 = "";
             match(clasificaciones.incremento_termino);
 
             if (operador == "++")
             {
                 l.setValor(nombre, (float.Parse(l.getValor(nombre)) + 1).ToString());
+                //asm.WriteLine("\tINC " + nombre);
                 ensamblador = "\tINC " + nombre;
             }
             else if (operador == "--")
             {
                 l.setValor(nombre, (float.Parse(l.getValor(nombre)) - 1).ToString());
+                //asm.WriteLine("\tDEC " + nombre);
                 ensamblador = "\tDEC " + nombre;
             }
             else if (operador == "+=")
@@ -798,10 +802,13 @@ namespace Ensamblador
                 l.setValor(nombre, (float.Parse(l.getValor(nombre)) - float.Parse(numero)).ToString());
                 ensamblador = "\tSUB " + nombre + ", " + numero;
             }
+            //asm.WriteLine(ensamblador);
             match(")");
 
+            //asm.WriteLine(ensamblador3);
             BloqueInstrucciones(ejecuta && ejecuta2);
             asm.WriteLine(ensamblador);
+            //asm.WriteLine(ensamblador2);
             asm.WriteLine("\tJMP " + etiquetaInicio);
             asm.WriteLine(etiquetaFin + ":");
 

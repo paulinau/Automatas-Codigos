@@ -1,0 +1,20 @@
+// Programa -> Libreria Main
+// Libreria -> (#include <identificador(.h)?> Libreria) ?
+// Main -> tipo_dato main() BloqueInstrucciones 
+// BloqueInstrucciones -> { Instrucciones }
+// Lista_IDs -> identificador (= Expresion)? (,Lista_IDs)? 
+// Variables -> tipo_dato Lista_IDs; 
+// Instruccion -> (If | cin | cout | const | Variables | asignacion) ;
+// Instrucciones -> Instruccion Instrucciones?
+// Constante -> const tipo_dato identificador = numero | cadena;
+// ListaFlujoSalida -> << cadena | identificador | numero (ListaFlujoSalida)?
+// If -> if (Condicion) { BloqueInstrucciones } (else BloqueInstrucciones)?
+// Condicion -> Expresion operador_relacional Expresion
+// Expresion -> Termino MasTermino 
+// MasTermino -> (operador_termino Termino)?
+// Termino -> Factor PorFactor
+// PorFactor -> (operador_factor Factor)?
+// Factor -> identificador | numero | ( Expresion )
+// For -> for (identificador = Expresion; Condicion; identificador incremento_termino) BloqueInstrucciones
+// While -> while (Condicion) BloqueInstrucciones
+// DoWhile -> do BloqueInstrucciones while (Condicion);

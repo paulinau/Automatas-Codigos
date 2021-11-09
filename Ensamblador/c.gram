@@ -1,0 +1,21 @@
+La entrada = 
+
+// Programa -> Main ()
+// Main -> void Main () {}
+
+La salida = Lenguaje.cs
+
+public void Program ()
+{
+    Main()
+}
+
+public void Main ()
+{
+    match("void");
+    match("Main");
+    match("(");
+    match(")");
+    match("{");
+    match("}");
+}
